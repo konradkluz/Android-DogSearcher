@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">DogSearcher</string>
+    <string name="tab_title_all">ALL</string>
+    <string name="tab_text_dog_of_the_day">DOG OF THE DAY</string>
+    <string name="tab_text_favourites">FAVOURITES</string>
+    <string name="action_settings">Settings</string>
+    <string name="section_format">Hello World from section: %1$d</string>
+    <string name="browse_image_description">Dog image thumbnail</string>
+    <string name="dog_breed_name_placeholder">Dog breed name</string>
+    <string name="sub_breeds_number">0 sub-breeds</string>
+    <string name="browse_add_to_favourites_description">Add to favourites</string>
+    <string name="empty_query_search">No dogs found</string>
+    <string name="empty"/>
+    <string name="dog_image_description">Dog image</string>
+</resources>

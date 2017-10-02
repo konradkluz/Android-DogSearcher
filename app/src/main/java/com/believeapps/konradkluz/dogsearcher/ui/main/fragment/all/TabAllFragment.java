@@ -6,7 +6,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -16,9 +15,9 @@ import android.view.ViewGroup;
 
 import com.believeapps.konradkluz.dogsearcher.R;
 import com.believeapps.konradkluz.dogsearcher.model.entities.Dog;
+import com.believeapps.konradkluz.dogsearcher.model.entities.FavouriteDog;
 import com.believeapps.konradkluz.dogsearcher.model.entities.Status;
 import com.believeapps.konradkluz.dogsearcher.ui.detail.DogDetailActivity;
-import com.believeapps.konradkluz.dogsearcher.ui.main.fragment.all.adapter.listener.AllDogsRecyclerItemClickListener;
 import com.believeapps.konradkluz.dogsearcher.ui.main.fragment.all.adapter.AllDogsRecyclerViewAdapter;
 import com.believeapps.konradkluz.dogsearcher.viewmodel.AllDogsFragmentViewModel;
 
@@ -36,7 +35,7 @@ import dagger.android.support.AndroidSupportInjection;
  */
 
 public class TabAllFragment extends Fragment implements TabAllView,
-        AllDogsRecyclerItemClickListener.OnRecyclerClickListener {
+        AllDogsRecyclerViewAdapter.DogViewHolder.AllDogsItemClickListener {
 
     private static final String TAG = "TabAllFragment";
 
@@ -46,7 +45,7 @@ public class TabAllFragment extends Fragment implements TabAllView,
     ViewModelProvider.Factory mFactory;
 
     @Inject
-    public AllDogsRecyclerViewAdapter mAllDogsRecyclerViewAdapter;
+    AllDogsRecyclerViewAdapter mAllDogsRecyclerViewAdapter;
 
     @BindView(R.id.all_dogs_list)
     RecyclerView mAllDogs;
@@ -66,21 +65,15 @@ public class TabAllFragment extends Fragment implements TabAllView,
         mAllDogsFragmentViewModel = ViewModelProviders.of(this, mFactory).get(AllDogsFragmentViewModel.class);
 
         mAllDogs.setLayoutManager(new LinearLayoutManager(getActivity()));
-        mAllDogs.addOnItemTouchListener(
-                new AllDogsRecyclerItemClickListener(
-                        getActivity(),
-                        mAllDogs,
-                        this
-                )
-        );
 
         mAllDogs.setAdapter(mAllDogsRecyclerViewAdapter);
+        mAllDogsRecyclerViewAdapter.setAllDogsItemClickListener(this);
 
         mAllDogsFragmentViewModel.getApiResponse().observe(this, response -> {
             if (response.status == Status.ERROR) {
                 mAllDogsRecyclerViewAdapter.swapSource(new ArrayList<>());
                 Log.e(TAG, "onCreateView: error occurred", response.error);
-            }else {
+            } else {
                 mAllDogsRecyclerViewAdapter.swapSource((List<Dog>) response.data);
                 Log.d(TAG, "onCreateView: response succeed: " + response.data);
             }
@@ -95,16 +88,26 @@ public class TabAllFragment extends Fragment implements TabAllView,
     }
 
     @Override
-    public void onItemClick(View view, int position) {
+    public void onRowPositionClicked(int position) {
+        Log.d(TAG, "onItemClick: " + position);
         Log.d(TAG, "Portrait onRecyclerViewItemClicked: clicked");
         Dog dog = mAllDogsRecyclerViewAdapter.getDog(position);
-        Intent intent = new Intent(getActivity(), DogDetailActivity.class);
-        intent.putExtra("dog", dog);
-        getActivity().startActivity(intent);
+        if (dog != null) {
+            Intent intent = new Intent(getActivity(), DogDetailActivity.class);
+            intent.putExtra("dog", dog);
+            getActivity().startActivity(intent);
+            Log.d(TAG, "onRowPositionClicked: dog will be displayed");
+        }else {
+            Log.d(TAG, "onRowPositionClicked: dog list is empty");
+        }
     }
 
     @Override
-    public void onLongItemClick(View view, int position) {
-
+    public void onFavouritesButtonClicked(int position) {
+        Dog dog = mAllDogsRecyclerViewAdapter.getDog(position);
+        FavouriteDog favouriteDog = new FavouriteDog();
+        favouriteDog.setBreed(dog.getBreedName());
+        favouriteDog.setImageUrl(dog.getImageUrl());
+        mAllDogsFragmentViewModel.persistFavouriteDog(favouriteDog);
     }
 }

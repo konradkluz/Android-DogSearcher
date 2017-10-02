@@ -22,8 +22,6 @@ import dagger.Provides;
         DogDetailActivityComponent.class})
 public class ApplicationModule {
 
-    public final String BASE_URL = "https://dog.ceo";
-
     @Provides
     ViewModelProvider.Factory provideDogListViewModelFactory(ViewModelFactory factory) {
         return factory;

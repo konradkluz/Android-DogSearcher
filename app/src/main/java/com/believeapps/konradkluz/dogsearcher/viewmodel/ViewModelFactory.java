@@ -13,15 +13,21 @@ public class ViewModelFactory implements ViewModelProvider.Factory {
 
     private AllDogsFragmentViewModel mAllDogsFragmentViewModel;
 
+    private FavouritesViewModel mFavouritesViewModel;
+
     @Inject
-    public ViewModelFactory(AllDogsFragmentViewModel allDogsFragmentViewModel) {
+    public ViewModelFactory(AllDogsFragmentViewModel allDogsFragmentViewModel,
+                            FavouritesViewModel favouritesViewModel) {
         mAllDogsFragmentViewModel = allDogsFragmentViewModel;
+        mFavouritesViewModel = favouritesViewModel;
     }
 
     @Override
     public <T extends ViewModel> T create(Class<T> modelClass) {
         if (modelClass.isAssignableFrom(AllDogsFragmentViewModel.class)) {
             return (T) mAllDogsFragmentViewModel;
+        } else if (modelClass.isAssignableFrom(FavouritesViewModel.class)) {
+            return (T) mFavouritesViewModel;
         }
         throw new IllegalArgumentException("Unknown class name");
     }

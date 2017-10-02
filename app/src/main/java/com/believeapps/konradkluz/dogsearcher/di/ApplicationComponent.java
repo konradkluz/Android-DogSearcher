@@ -3,6 +3,7 @@ package com.believeapps.konradkluz.dogsearcher.di;
 import android.app.Application;
 
 import com.believeapps.konradkluz.dogsearcher.model.ApiModule;
+import com.believeapps.konradkluz.dogsearcher.model.DbModule;
 
 import javax.inject.Singleton;
 
@@ -19,6 +20,7 @@ import dagger.android.support.AndroidSupportInjectionModule;
         AndroidSupportInjectionModule.class,
         ApplicationModule.class,
         ApiModule.class,
+        DbModule.class,
         ActivityBuilder.class
 })
 public interface ApplicationComponent {

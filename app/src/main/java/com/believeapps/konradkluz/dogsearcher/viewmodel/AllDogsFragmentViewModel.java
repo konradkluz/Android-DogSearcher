@@ -1,12 +1,16 @@
 package com.believeapps.konradkluz.dogsearcher.viewmodel;
 
+import android.app.Application;
+import android.arch.lifecycle.AndroidViewModel;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MediatorLiveData;
 import android.arch.lifecycle.ViewModel;
 import android.support.annotation.NonNull;
 
+import com.believeapps.konradkluz.dogsearcher.model.entities.FavouriteDog;
 import com.believeapps.konradkluz.dogsearcher.model.entities.Response;
-import com.believeapps.konradkluz.dogsearcher.model.repository.DogRepository;
+import com.believeapps.konradkluz.dogsearcher.model.repository.DogLocalRepository;
+import com.believeapps.konradkluz.dogsearcher.model.repository.DogRemoteRepository;
 
 import javax.inject.Inject;
 
@@ -16,14 +20,18 @@ import javax.inject.Inject;
 
 public class AllDogsFragmentViewModel extends ViewModel {
 
-    private MediatorLiveData<Response> mApiResponse;
-    private DogRepository mDogRepository;
+    private final MediatorLiveData<Response> mApiResponse;
+
+    private DogRemoteRepository mDogRemoteRepository;
+    private DogLocalRepository mDogLocalRepository;
     private boolean requestSent = false;
 
     @Inject
-    public AllDogsFragmentViewModel(DogRepository repository) {
+    public AllDogsFragmentViewModel(DogRemoteRepository remoteRepository,
+                                    DogLocalRepository localRepository) {
         mApiResponse = new MediatorLiveData<>();
-        mDogRepository = repository;
+        mDogRemoteRepository = remoteRepository;
+        mDogLocalRepository = localRepository;
     }
 
     @NonNull
@@ -33,10 +41,14 @@ public class AllDogsFragmentViewModel extends ViewModel {
 
     public LiveData<Response> loadDogs() {
         mApiResponse.addSource(
-                mDogRepository.getAllDogs(),
+                mDogRemoteRepository.getAllDogs(),
                 response -> mApiResponse.setValue(response));
         requestSent = true;
         return mApiResponse;
+    }
+
+    public void persistFavouriteDog(FavouriteDog favouriteDog) {
+        mDogLocalRepository.insertFavouriteDog(favouriteDog);
     }
 
     public boolean isRequestSent() {

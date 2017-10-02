@@ -2,8 +2,8 @@ package com.believeapps.konradkluz.dogsearcher.model;
 
 import com.believeapps.konradkluz.dogsearcher.model.api.DogApiService;
 import com.believeapps.konradkluz.dogsearcher.model.repository.CustomJsonConverterFactory;
-import com.believeapps.konradkluz.dogsearcher.model.repository.DogRepository;
-import com.believeapps.konradkluz.dogsearcher.model.repository.DogRepositoryImpl;
+import com.believeapps.konradkluz.dogsearcher.model.repository.DogRemoteRepository;
+import com.believeapps.konradkluz.dogsearcher.model.repository.DogRemoteRepositoryImpl;
 
 import javax.inject.Singleton;
 
@@ -11,7 +11,6 @@ import dagger.Module;
 import dagger.Provides;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 /**
  * Created by konradkluz on 01/10/2017.
@@ -40,7 +39,7 @@ public class ApiModule {
 
     @Provides
     @Singleton
-    DogRepository provideDogRepository(DogRepositoryImpl dogRepository) {
+    DogRemoteRepository provideDogRepository(DogRemoteRepositoryImpl dogRepository) {
         return dogRepository;
     }
 

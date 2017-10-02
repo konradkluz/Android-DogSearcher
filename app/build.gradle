@@ -56,9 +56,14 @@ dependencies {
     implementation group: 'com.squareup.retrofit2', name: 'adapter-rxjava2', version: "$retrofitVersion"
 
     // Lifecycle
-    compile "android.arch.lifecycle:runtime:$project.lifecycleVersion"
-    compile "android.arch.lifecycle:extensions:$project.lifecycleVersion"
+    implementation "android.arch.lifecycle:runtime:$project.lifecycleVersion"
+    implementation "android.arch.lifecycle:extensions:$project.lifecycleVersion"
     annotationProcessor "android.arch.lifecycle:compiler:$project.lifecycleVersion"
+
+    //Room
+    implementation "android.arch.persistence.room:runtime:$project.lifecycleVersion"
+    implementation "android.arch.persistence.room:rxjava2:$project.lifecycleVersion"
+    annotationProcessor "android.arch.persistence.room:compiler:$project.lifecycleVersion"
 
     testImplementation 'junit:junit:4.12'
     androidTestImplementation('com.android.support.test.espresso:espresso-core:3.0.1', {
@@ -66,5 +71,5 @@ dependencies {
     })
     implementation 'com.android.support:cardview-v7:26.1.0'
 
-    compile 'com.squareup.picasso:picasso:2.5.2'
+    implementation 'com.squareup.picasso:picasso:2.5.2'
 }

@@ -9,6 +9,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.believeapps.konradkluz.dogsearcher.R;
+import com.believeapps.konradkluz.dogsearcher.model.entities.FavouriteDog;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,7 +27,7 @@ public class FavouritesRecyclerViewAdapter extends RecyclerView.Adapter<Favourit
     private static final String TAG = "FavouritesRecyclerViewA";
 
     private Context mContext;
-    private List<String> mFavouritesDogs;
+    private List<FavouriteDog> mFavouritesDogs;
 
     public FavouritesRecyclerViewAdapter(Context context) {
         mContext = context;
@@ -41,8 +43,13 @@ public class FavouritesRecyclerViewAdapter extends RecyclerView.Adapter<Favourit
     @Override
     public void onBindViewHolder(DogFavouritesViewHolder holder, int position) {
         if (mFavouritesDogs != null || !mFavouritesDogs.isEmpty()) {
+            FavouriteDog favouriteDog = mFavouritesDogs.get(position);
             holder.dogImage.setImageResource(R.drawable.ic_image_black_48dp);
-            holder.breedName.setText(mFavouritesDogs.get(position));
+            Picasso.with(mContext).load(favouriteDog.getImageUrl())
+                    .error(R.drawable.ic_image_black_48dp)
+                    .placeholder(R.drawable.ic_image_black_48dp)
+                    .into(holder.dogImage);
+            holder.breedName.setText(favouriteDog.getBreed());
         }
     }
 
@@ -51,7 +58,7 @@ public class FavouritesRecyclerViewAdapter extends RecyclerView.Adapter<Favourit
         return mFavouritesDogs != null && !mFavouritesDogs.isEmpty() ? mFavouritesDogs.size() : 0;
     }
 
-    public void swapSource(List<String> dogs) {
+    public void swapSource(List<FavouriteDog> dogs) {
         mFavouritesDogs = dogs;
         notifyDataSetChanged();
     }

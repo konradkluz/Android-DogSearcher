@@ -8,6 +8,7 @@ import com.believeapps.konradkluz.dogsearcher.ui.main.fragment.favourites.TabFav
 import com.believeapps.konradkluz.dogsearcher.ui.main.inflater.LayoutInflationStrategy;
 import com.believeapps.konradkluz.dogsearcher.ui.main.inflater.impl.PortraitLayoutInflationStrategy;
 import com.believeapps.konradkluz.dogsearcher.viewmodel.AllDogsFragmentViewModel;
+import com.believeapps.konradkluz.dogsearcher.viewmodel.FavouritesViewModel;
 
 import dagger.Module;
 import dagger.Provides;
@@ -35,6 +36,11 @@ public class MainActivityModule {
     @Provides
     ViewModel provideDogListViewModel(AllDogsFragmentViewModel allDogsFragmentViewModel) {
         return allDogsFragmentViewModel;
+    }
+
+    @Provides
+    ViewModel provideFavouritesViewModel(FavouritesViewModel favouritesViewModel) {
+        return favouritesViewModel;
     }
 
 }

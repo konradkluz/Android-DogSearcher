@@ -20,7 +20,7 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:contentDescription="@string/browse_image_description"
-        android:scaleType="fitStart"
+        android:scaleType="fitXY"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -30,13 +30,11 @@
         android:id="@+id/browse_item_dog_breed_name"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
         android:layout_marginStart="24dp"
         android:layout_marginTop="8dp"
         android:textAlignment="viewStart"
         android:textSize="18sp"
         android:textStyle="bold"
-        app:layout_constraintEnd_toStartOf="@+id/browse_item_add_to_favourites_button"
         app:layout_constraintStart_toEndOf="@+id/browse_item_dog_image_thumbnail"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="@string/dog_breed_name_placeholder"/>
@@ -53,15 +51,16 @@
 
     <ImageButton
         android:id="@+id/browse_item_add_to_favourites_button"
-        android:layout_width="56dp"
-        android:layout_height="wrap_content"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
         android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginTop="8dp"
-        android:contentDescription="@string/browse_add_to_favourites_description"
+        android:background="@android:color/transparent"
+        android:scaleType="fitCenter"
+        android:src="@android:drawable/btn_star_big_off"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@android:drawable/btn_star_big_off"/>
+        app:layout_constraintTop_toTopOf="parent"/>
 
 </android.support.constraint.ConstraintLayout>

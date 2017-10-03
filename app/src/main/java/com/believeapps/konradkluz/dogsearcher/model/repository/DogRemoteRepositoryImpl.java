@@ -5,13 +5,10 @@ import android.arch.lifecycle.MutableLiveData;
 import android.util.Log;
 
 import com.believeapps.konradkluz.dogsearcher.model.api.DogApiService;
-import com.believeapps.konradkluz.dogsearcher.model.db.FavouriteDogsDao;
-import com.believeapps.konradkluz.dogsearcher.model.entities.FavouriteDog;
 import com.believeapps.konradkluz.dogsearcher.model.entities.Response;
 
 import javax.inject.Inject;
 
-import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 

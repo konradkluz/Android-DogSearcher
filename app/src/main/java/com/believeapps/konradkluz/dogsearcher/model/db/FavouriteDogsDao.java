@@ -1,19 +1,21 @@
 package com.believeapps.konradkluz.dogsearcher.model.db;
 
-import android.arch.lifecycle.LiveData;
 import android.arch.persistence.room.Dao;
 import android.arch.persistence.room.Delete;
 import android.arch.persistence.room.Insert;
 import android.arch.persistence.room.Query;
 import android.arch.persistence.room.Update;
 
-import com.believeapps.konradkluz.dogsearcher.model.entities.FavouriteDog;
+import com.believeapps.konradkluz.dogsearcher.model.entities.Breed;
+import com.believeapps.konradkluz.dogsearcher.model.entities.BreedWithSubBreeds;
+import com.believeapps.konradkluz.dogsearcher.model.entities.SubBreed;
 
 import java.util.List;
 
 import io.reactivex.Flowable;
 import io.reactivex.Single;
 
+import static android.arch.persistence.room.ForeignKey.CASCADE;
 import static android.arch.persistence.room.OnConflictStrategy.REPLACE;
 
 /**
@@ -22,19 +24,25 @@ import static android.arch.persistence.room.OnConflictStrategy.REPLACE;
 @Dao
 public interface FavouriteDogsDao {
 
-    @Query("select * from favourite_dogs")
-    Flowable<List<FavouriteDog>> getAllFavouriteDogs();
+    @Query("select * from breed_favourite")
+    Flowable<List<BreedWithSubBreeds>> getAllFavouriteDogs();
 
-    @Query("select * from favourite_dogs where breed like :breed limit 1")
-    Single<FavouriteDog> findByBreed(String breed);
+    @Query("select * from breed_favourite where name like :name limit 1")
+    Single<BreedWithSubBreeds> findByBreed(String name);
 
     @Insert(onConflict = REPLACE)
-    long insert(FavouriteDog favouriteDog);
+    Long insert(Breed favouriteDog);
+
+    @Insert(onConflict = REPLACE)
+    List<Long> insertAllSubBreeds(List<SubBreed> subBreeds);
 
     @Update
-    void update(FavouriteDog favouriteDog);
+    void update(Breed favouriteDog);
 
     @Delete
-    void delete(FavouriteDog favouriteDog);
+    int delete(Breed favouriteDog);
+
+    @Delete
+    int deleteAllSubBreeds(List<SubBreed> subBreeds);
 
 }

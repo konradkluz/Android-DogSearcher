@@ -11,10 +11,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.believeapps.konradkluz.dogsearcher.R;
-import com.believeapps.konradkluz.dogsearcher.model.entities.Dog;
+import com.believeapps.konradkluz.dogsearcher.model.entities.Breed;
+import com.believeapps.konradkluz.dogsearcher.model.entities.BreedWithSubBreeds;
 import com.squareup.picasso.Picasso;
-
-import java.io.Serializable;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -49,12 +48,13 @@ public class TabDogOfTheDayFragment extends Fragment implements TabDogOfTheDayVi
 
         Bundle arguments = getArguments();
         if (arguments != null) {
-            Dog dog = (Dog)arguments.getSerializable("dog");
-            if (dog != null) {
+            BreedWithSubBreeds breedWithSubBreeds = (BreedWithSubBreeds)arguments.getSerializable("dog");
+            if (breedWithSubBreeds != null) {
                 Log.d(TAG, "onCreateView: dog found");
-                mDogName.setText(dog.getBreedName());
+                Breed breed = breedWithSubBreeds.breed;
+                mDogName.setText(breed.getName());
 
-                Picasso.with(getActivity()).load(dog.getImageUrl())
+                Picasso.with(getActivity()).load(breed.getImageUrl())
                         .error(R.drawable.ic_image_black_48dp)
                         .placeholder(R.drawable.ic_image_black_48dp)
                         .into(mDogImage);

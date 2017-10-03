@@ -3,7 +3,9 @@ package com.believeapps.konradkluz.dogsearcher.model.repository;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
-import com.believeapps.konradkluz.dogsearcher.model.entities.Dog;
+import com.believeapps.konradkluz.dogsearcher.model.entities.Breed;
+import com.believeapps.konradkluz.dogsearcher.model.entities.BreedWithSubBreeds;
+import com.believeapps.konradkluz.dogsearcher.model.entities.SubBreed;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -29,11 +31,11 @@ public class CustomJsonConverterFactory extends Converter.Factory {
         return JsonConverter.INSTANCE;
     }
 
-    final static class JsonConverter implements Converter<ResponseBody, List<Dog>> {
+    final static class JsonConverter implements Converter<ResponseBody, List<BreedWithSubBreeds>> {
         static final JsonConverter INSTANCE = new JsonConverter();
 
         @Override
-        public List<Dog> convert(ResponseBody responseBody) throws IOException {
+        public List<BreedWithSubBreeds> convert(ResponseBody responseBody) throws IOException {
             try {
                 Log.d(TAG, "convert: try to convert responseBody: " + responseBody);
                 return getDogList(responseBody);
@@ -43,19 +45,29 @@ public class CustomJsonConverterFactory extends Converter.Factory {
         }
 
         @NonNull
-        private List<Dog> getDogList(ResponseBody responseBody) throws JSONException, IOException {
-            List<Dog> dogs = new ArrayList<>();
+        private List<BreedWithSubBreeds> getDogList(ResponseBody responseBody) throws JSONException, IOException {
+            List<BreedWithSubBreeds> dogs = new ArrayList<>();
             JSONObject jsonObject = new JSONObject(responseBody.string());
             JSONObject message = jsonObject.getJSONObject("message");
             Iterator<String> keys = message.keys();
             while (keys.hasNext()) {
-                String breed = keys.next();
-                JSONArray jsonArray = message.getJSONArray(breed);
-                List<String> subBreeds = new ArrayList<>();
+                String breedName = keys.next();
+
+                Breed breed = new Breed();
+                breed.setName(breedName);
+
+                JSONArray jsonArray = message.getJSONArray(breedName);
+                List<SubBreed> subBreeds = new ArrayList<>();
                 for (int i = 0; i < jsonArray.length(); i++) {
-                    subBreeds.add(jsonArray.getString(i));
+                    SubBreed subBreed = new SubBreed();
+                    subBreed.setName(jsonArray.getString(i));
+                    subBreeds.add(subBreed);
                 }
-                dogs.add(new Dog(breed, subBreeds));
+                BreedWithSubBreeds breedWithSubBreeds = new BreedWithSubBreeds();
+                breedWithSubBreeds.setBreed(breed);
+                breedWithSubBreeds.setSubBreeds(subBreeds);
+
+                dogs.add(breedWithSubBreeds);
             }
             return dogs;
         }

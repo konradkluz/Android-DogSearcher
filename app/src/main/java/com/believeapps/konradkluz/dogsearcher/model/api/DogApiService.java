@@ -1,8 +1,6 @@
 package com.believeapps.konradkluz.dogsearcher.model.api;
 
-import com.believeapps.konradkluz.dogsearcher.model.entities.Dog;
-
-import org.json.JSONObject;
+import com.believeapps.konradkluz.dogsearcher.model.entities.BreedWithSubBreeds;
 
 import java.util.List;
 
@@ -17,7 +15,7 @@ import retrofit2.http.Path;
 
 public interface DogApiService {
     @GET("/api/breeds/list/all")
-    Observable<List<Dog>> getAllDogs();
+    Observable<List<BreedWithSubBreeds>> getAllDogs();
 
     @GET("/api/breed/{breedName}/images/random")
     Observable<ResponseBody> getImageUrlByBreedName(@Path("breedName") String breedName);

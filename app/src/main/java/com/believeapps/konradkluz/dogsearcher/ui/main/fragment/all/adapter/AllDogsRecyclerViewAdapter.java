@@ -12,7 +12,9 @@ import android.widget.TextView;
 
 import com.believeapps.konradkluz.dogsearcher.R;
 import com.believeapps.konradkluz.dogsearcher.model.api.DogApiService;
-import com.believeapps.konradkluz.dogsearcher.model.entities.Dog;
+import com.believeapps.konradkluz.dogsearcher.model.entities.Breed;
+import com.believeapps.konradkluz.dogsearcher.model.entities.BreedWithSubBreeds;
+import com.believeapps.konradkluz.dogsearcher.model.entities.SubBreed;
 import com.squareup.picasso.Picasso;
 
 import org.json.JSONObject;
@@ -38,7 +40,7 @@ public class AllDogsRecyclerViewAdapter extends RecyclerView.Adapter<AllDogsRecy
 
     private Context mContext;
     private DogViewHolder.AllDogsItemClickListener mAllDogsItemClickListener;
-    private List<Dog> mDogs;
+    private List<BreedWithSubBreeds> mDogs;
 
     @Inject
     DogApiService mDogApiService;
@@ -66,18 +68,31 @@ public class AllDogsRecyclerViewAdapter extends RecyclerView.Adapter<AllDogsRecy
             holder.subBreeds.setText(R.string.empty);
             holder.addToFavourites.setVisibility(View.GONE);
         } else {
+            Log.d(TAG, "onBindViewHolder: dog list has elements");
             holder.dogThumbnail.setImageResource(R.drawable.ic_image_black_48dp);
-            Dog dog = mDogs.get(position);
-            holder.breedName.setText(dog.getBreedName());
-            holder.subBreeds.setText(dog.getSubBreedsNames().toString());
+            BreedWithSubBreeds breedWithSubBreeds = mDogs.get(position);
+
+            Breed breed = breedWithSubBreeds.breed;
+            List<SubBreed> subBreeds = breedWithSubBreeds.subBreeds;
+
+            holder.breedName.setText(breed.getName());
+            holder.subBreeds.setText(subBreeds.toString());
             holder.addToFavourites.setVisibility(View.VISIBLE);
-            if (dog.getImageUrl() != null) {
-                Picasso.with(mContext).load(dog.getImageUrl())
+            if (breed.getId() != null) {
+                holder.addToFavourites.setTag(android.R.drawable.btn_star_big_on);
+                holder.addToFavourites.setImageResource(android.R.drawable.btn_star_big_on);
+            }else {
+                holder.addToFavourites.setTag(android.R.drawable.btn_star_big_off);
+                holder.addToFavourites.setImageResource(android.R.drawable.btn_star_big_off);
+            }
+
+            if (breed.getImageUrl() != null) {
+                Picasso.with(mContext).load(breed.getImageUrl())
                         .error(R.drawable.ic_image_black_48dp)
                         .placeholder(R.drawable.ic_image_black_48dp)
                         .into(holder.dogThumbnail);
             } else {
-                mDogApiService.getImageUrlByBreedName(dog.getBreedName())
+                mDogApiService.getImageUrlByBreedName(breed.getName())
                         .map(responseBody -> {
                             JSONObject jsonObject = new JSONObject(responseBody.string());
                             return jsonObject.getString("message");
@@ -86,7 +101,7 @@ public class AllDogsRecyclerViewAdapter extends RecyclerView.Adapter<AllDogsRecy
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(imageUrl -> {
                                     Log.d(TAG, "onBindViewHolder: subscribe: " + imageUrl);
-                                    dog.setImageUrl(imageUrl);
+                                    breed.setImageUrl(imageUrl);
                                     Picasso.with(mContext).load(imageUrl)
                                             .error(R.drawable.ic_image_black_48dp)
                                             .placeholder(R.drawable.ic_image_black_48dp)
@@ -103,12 +118,12 @@ public class AllDogsRecyclerViewAdapter extends RecyclerView.Adapter<AllDogsRecy
         return mDogs != null && !mDogs.isEmpty() ? mDogs.size() : 1;
     }
 
-    public void swapSource(List<Dog> dogs) {
+    public void swapSource(List<BreedWithSubBreeds> dogs) {
         mDogs = dogs;
         notifyDataSetChanged();
     }
 
-    public Dog getDog(int position) {
+    public BreedWithSubBreeds getBreed(int position) {
         return mDogs != null && !mDogs.isEmpty() ? mDogs.get(position) : null;
     }
 
@@ -121,7 +136,7 @@ public class AllDogsRecyclerViewAdapter extends RecyclerView.Adapter<AllDogsRecy
         public interface AllDogsItemClickListener {
             void onRowPositionClicked(int position);
 
-            void onFavouritesButtonClicked(int position);
+            void onFavouritesButtonClicked(int position, boolean alreadyAdded);
         }
 
         private static final String TAG = "DogViewHolder";
@@ -151,16 +166,16 @@ public class AllDogsRecyclerViewAdapter extends RecyclerView.Adapter<AllDogsRecy
 
             itemView.setOnClickListener(this);
             addToFavourites.setOnClickListener(this);
-
-            addToFavourites.setTag(android.R.drawable.btn_star_big_off);
         }
 
         @Override
         public void onClick(View view) {
             if (view.getId() == R.id.browse_item_add_to_favourites_button) {
                 Log.d(TAG, "onClick: favourites btn clicked");
-                handleFavouritesBtnClicked();
-                listenerRef.get().onFavouritesButtonClicked(getAdapterPosition());
+                boolean alreadyAdded = handleFavouritesBtnClicked();
+                if (listenerRef != null) {
+                    listenerRef.get().onFavouritesButtonClicked(getAdapterPosition(), alreadyAdded);
+                }
             } else {
                 Log.d(TAG, "onClick: row clicked");
                 if (listenerRef != null) {
@@ -169,13 +184,15 @@ public class AllDogsRecyclerViewAdapter extends RecyclerView.Adapter<AllDogsRecy
             }
         }
 
-        private void handleFavouritesBtnClicked() {
+        private boolean handleFavouritesBtnClicked() {
             if (android.R.drawable.btn_star_big_off == (Integer) addToFavourites.getTag()) {
                 addToFavourites.setImageResource(android.R.drawable.btn_star_big_on);
                 addToFavourites.setTag(android.R.drawable.btn_star_big_on);
+                return false;
             } else {
                 addToFavourites.setImageResource(android.R.drawable.btn_star_big_off);
                 addToFavourites.setTag(android.R.drawable.btn_star_big_off);
+                return true;
             }
         }
     }

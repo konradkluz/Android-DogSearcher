@@ -9,7 +9,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.believeapps.konradkluz.dogsearcher.R;
-import com.believeapps.konradkluz.dogsearcher.model.entities.FavouriteDog;
+import com.believeapps.konradkluz.dogsearcher.model.entities.Breed;
+import com.believeapps.konradkluz.dogsearcher.model.entities.BreedWithSubBreeds;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -27,7 +28,7 @@ public class FavouritesRecyclerViewAdapter extends RecyclerView.Adapter<Favourit
     private static final String TAG = "FavouritesRecyclerViewA";
 
     private Context mContext;
-    private List<FavouriteDog> mFavouritesDogs;
+    private List<BreedWithSubBreeds> mFavouritesDogs;
 
     public FavouritesRecyclerViewAdapter(Context context) {
         mContext = context;
@@ -43,13 +44,14 @@ public class FavouritesRecyclerViewAdapter extends RecyclerView.Adapter<Favourit
     @Override
     public void onBindViewHolder(DogFavouritesViewHolder holder, int position) {
         if (mFavouritesDogs != null || !mFavouritesDogs.isEmpty()) {
-            FavouriteDog favouriteDog = mFavouritesDogs.get(position);
+            BreedWithSubBreeds breedWithSubBreeds = mFavouritesDogs.get(position);
+            Breed breed = breedWithSubBreeds.breed;
             holder.dogImage.setImageResource(R.drawable.ic_image_black_48dp);
-            Picasso.with(mContext).load(favouriteDog.getImageUrl())
+            Picasso.with(mContext).load(breed.getImageUrl())
                     .error(R.drawable.ic_image_black_48dp)
                     .placeholder(R.drawable.ic_image_black_48dp)
                     .into(holder.dogImage);
-            holder.breedName.setText(favouriteDog.getBreed());
+            holder.breedName.setText(breed.getName());
         }
     }
 
@@ -58,7 +60,7 @@ public class FavouritesRecyclerViewAdapter extends RecyclerView.Adapter<Favourit
         return mFavouritesDogs != null && !mFavouritesDogs.isEmpty() ? mFavouritesDogs.size() : 0;
     }
 
-    public void swapSource(List<FavouriteDog> dogs) {
+    public void swapSource(List<BreedWithSubBreeds> dogs) {
         mFavouritesDogs = dogs;
         notifyDataSetChanged();
     }

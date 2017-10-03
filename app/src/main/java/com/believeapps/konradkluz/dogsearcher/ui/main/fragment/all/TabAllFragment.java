@@ -14,8 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.believeapps.konradkluz.dogsearcher.R;
-import com.believeapps.konradkluz.dogsearcher.model.entities.Dog;
-import com.believeapps.konradkluz.dogsearcher.model.entities.FavouriteDog;
+import com.believeapps.konradkluz.dogsearcher.model.entities.BreedWithSubBreeds;
 import com.believeapps.konradkluz.dogsearcher.model.entities.Status;
 import com.believeapps.konradkluz.dogsearcher.ui.detail.DogDetailActivity;
 import com.believeapps.konradkluz.dogsearcher.ui.main.fragment.all.adapter.AllDogsRecyclerViewAdapter;
@@ -74,7 +73,14 @@ public class TabAllFragment extends Fragment implements TabAllView,
                 mAllDogsRecyclerViewAdapter.swapSource(new ArrayList<>());
                 Log.e(TAG, "onCreateView: error occurred", response.error);
             } else {
-                mAllDogsRecyclerViewAdapter.swapSource((List<Dog>) response.data);
+                List<BreedWithSubBreeds> breedWithSubBreeds = (List<BreedWithSubBreeds>) response.data;
+                mAllDogsFragmentViewModel.updateDogs(breedWithSubBreeds)
+                        .subscribe(
+                                updatedBreeds -> {
+                                    Log.d(TAG, "onCreateView: updated breeds: " + updatedBreeds);
+                                    mAllDogsRecyclerViewAdapter.swapSource(updatedBreeds);
+                                },
+                                error -> Log.e(TAG, "onCreateView: error occurred: ", error));
                 Log.d(TAG, "onCreateView: response succeed: " + response.data);
             }
         });
@@ -91,23 +97,25 @@ public class TabAllFragment extends Fragment implements TabAllView,
     public void onRowPositionClicked(int position) {
         Log.d(TAG, "onItemClick: " + position);
         Log.d(TAG, "Portrait onRecyclerViewItemClicked: clicked");
-        Dog dog = mAllDogsRecyclerViewAdapter.getDog(position);
-        if (dog != null) {
+        BreedWithSubBreeds breedWithSubBreeds = mAllDogsRecyclerViewAdapter.getBreed(position);
+        if (breedWithSubBreeds != null) {
             Intent intent = new Intent(getActivity(), DogDetailActivity.class);
-            intent.putExtra("dog", dog);
+            intent.putExtra("dog", breedWithSubBreeds);
             getActivity().startActivity(intent);
             Log.d(TAG, "onRowPositionClicked: dog will be displayed");
-        }else {
+        } else {
             Log.d(TAG, "onRowPositionClicked: dog list is empty");
         }
     }
 
     @Override
-    public void onFavouritesButtonClicked(int position) {
-        Dog dog = mAllDogsRecyclerViewAdapter.getDog(position);
-        FavouriteDog favouriteDog = new FavouriteDog();
-        favouriteDog.setBreed(dog.getBreedName());
-        favouriteDog.setImageUrl(dog.getImageUrl());
-        mAllDogsFragmentViewModel.persistFavouriteDog(favouriteDog);
+    public void onFavouritesButtonClicked(int position, boolean alreadyAdded) {
+        Log.d(TAG, "onFavouritesButtonClicked: clicked");
+        BreedWithSubBreeds breedWithSubBreeds = mAllDogsRecyclerViewAdapter.getBreed(position);
+        if (alreadyAdded) {
+            mAllDogsFragmentViewModel.deleteDogFromFavourites(breedWithSubBreeds);
+        } else {
+            mAllDogsFragmentViewModel.persistFavouriteDog(breedWithSubBreeds);
+        }
     }
 }

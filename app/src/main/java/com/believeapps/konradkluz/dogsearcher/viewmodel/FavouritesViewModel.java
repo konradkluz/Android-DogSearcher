@@ -1,16 +1,9 @@
 package com.believeapps.konradkluz.dogsearcher.viewmodel;
 
-import android.app.Application;
-import android.arch.lifecycle.AndroidViewModel;
-import android.arch.lifecycle.LiveData;
-import android.arch.lifecycle.MediatorLiveData;
 import android.arch.lifecycle.ViewModel;
 
-import com.believeapps.konradkluz.dogsearcher.model.db.AppDatabase;
-import com.believeapps.konradkluz.dogsearcher.model.entities.FavouriteDog;
-import com.believeapps.konradkluz.dogsearcher.model.entities.Response;
+import com.believeapps.konradkluz.dogsearcher.model.entities.BreedWithSubBreeds;
 import com.believeapps.konradkluz.dogsearcher.model.repository.DogLocalRepository;
-import com.believeapps.konradkluz.dogsearcher.model.repository.DogRemoteRepository;
 
 import java.util.List;
 
@@ -37,7 +30,7 @@ public class FavouritesViewModel extends ViewModel {
         mDogLocalRepository = localRepository;
     }
 
-    public Flowable<List<FavouriteDog>> getFavouriteDogs() {
+    public Flowable<List<BreedWithSubBreeds>> getFavouriteDogs() {
         return mDogLocalRepository.getAllFavourites();
     }
 

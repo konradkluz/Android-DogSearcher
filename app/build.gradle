@@ -66,6 +66,9 @@ dependencies {
     annotationProcessor "android.arch.persistence.room:compiler:$project.lifecycleVersion"
 
     testImplementation 'junit:junit:4.12'
+    // https://mvnrepository.com/artifact/org.mockito/mockito-all
+    testCompile group: 'org.mockito', name: 'mockito-all', version: '1.8.4'
+
     androidTestImplementation('com.android.support.test.espresso:espresso-core:3.0.1', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })

@@ -1,6 +1,7 @@
 package com.believeapps.konradkluz.dogsearcher.model.repository;
 
-import com.believeapps.konradkluz.dogsearcher.model.entities.FavouriteDog;
+import com.believeapps.konradkluz.dogsearcher.model.entities.Breed;
+import com.believeapps.konradkluz.dogsearcher.model.entities.BreedWithSubBreeds;
 
 import java.util.List;
 
@@ -11,6 +12,8 @@ import io.reactivex.Flowable;
  */
 
 public interface DogLocalRepository {
-    Flowable<List<FavouriteDog>> getAllFavourites();
-    void insertFavouriteDog(FavouriteDog favouriteDog);
+    Flowable<List<BreedWithSubBreeds>> getAllFavourites();
+    void insertFavouriteDog(BreedWithSubBreeds favouriteDog);
+
+    void deleteDogFromFavourites(BreedWithSubBreeds favouriteDog);
 }

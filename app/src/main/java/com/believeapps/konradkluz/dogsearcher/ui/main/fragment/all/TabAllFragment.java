@@ -38,7 +38,7 @@ public class TabAllFragment extends Fragment implements TabAllView,
 
     private static final String TAG = "TabAllFragment";
 
-    AllDogsFragmentViewModel mAllDogsFragmentViewModel;
+    private AllDogsFragmentViewModel mAllDogsFragmentViewModel;
 
     @Inject
     ViewModelProvider.Factory mFactory;
@@ -68,19 +68,25 @@ public class TabAllFragment extends Fragment implements TabAllView,
         mAllDogs.setAdapter(mAllDogsRecyclerViewAdapter);
         mAllDogsRecyclerViewAdapter.setAllDogsItemClickListener(this);
 
+        return rootView;
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
         mAllDogsFragmentViewModel.getApiResponse().observe(this, response -> {
             if (response.status == Status.ERROR) {
                 mAllDogsRecyclerViewAdapter.swapSource(new ArrayList<>());
                 Log.e(TAG, "onCreateView: error occurred", response.error);
             } else {
                 List<BreedWithSubBreeds> breedWithSubBreeds = (List<BreedWithSubBreeds>) response.data;
-                mAllDogsFragmentViewModel.updateDogs(breedWithSubBreeds)
-                        .subscribe(
-                                updatedBreeds -> {
-                                    Log.d(TAG, "onCreateView: updated breeds: " + updatedBreeds);
-                                    mAllDogsRecyclerViewAdapter.swapSource(updatedBreeds);
-                                },
-                                error -> Log.e(TAG, "onCreateView: error occurred: ", error));
+                mAllDogsFragmentViewModel.updateDogsFromApiWithFavourites(
+                        breedWithSubBreeds,
+                        updatedBreeds -> {
+                            Log.d(TAG, "onCreateView: updated breeds: " + updatedBreeds);
+                            mAllDogsRecyclerViewAdapter.swapSource(updatedBreeds);
+                        },
+                        error -> Log.e(TAG, "onCreateView: error occurred: ", error));
                 Log.d(TAG, "onCreateView: response succeed: " + response.data);
             }
         });
@@ -89,8 +95,6 @@ public class TabAllFragment extends Fragment implements TabAllView,
         if (!mAllDogsFragmentViewModel.isRequestSent()) {
             mAllDogsFragmentViewModel.loadDogs();
         }
-
-        return rootView;
     }
 
     @Override

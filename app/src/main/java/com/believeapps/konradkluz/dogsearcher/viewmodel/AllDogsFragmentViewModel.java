@@ -6,23 +6,16 @@ import android.arch.lifecycle.ViewModel;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
-import com.believeapps.konradkluz.dogsearcher.model.entities.Breed;
 import com.believeapps.konradkluz.dogsearcher.model.entities.BreedWithSubBreeds;
 import com.believeapps.konradkluz.dogsearcher.model.entities.Response;
 import com.believeapps.konradkluz.dogsearcher.model.repository.DogLocalRepository;
 import com.believeapps.konradkluz.dogsearcher.model.repository.DogRemoteRepository;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
 
-import io.reactivex.Flowable;
-import io.reactivex.Observable;
-import io.reactivex.Single;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.schedulers.Schedulers;
+import io.reactivex.functions.Consumer;
 
 /**
  * Created by konradkluz on 30/09/2017.
@@ -69,30 +62,13 @@ public class AllDogsFragmentViewModel extends ViewModel {
         mDogLocalRepository.deleteDogFromFavourites(favouriteDog);
     }
 
-    //TODO change name
-    public Flowable<List<BreedWithSubBreeds>> updateDogs(List<BreedWithSubBreeds> breedWithSubBreeds) {
-        Log.d(TAG, "updateDogs: updating dogs");
-        Flowable<List<BreedWithSubBreeds>> allFavourites = mDogLocalRepository
-                .getAllFavourites()
-                .subscribeOn(Schedulers.io());
+    public void updateDogsFromApiWithFavourites(List<BreedWithSubBreeds> breedWithSubBreeds,
+                                                Consumer<List<BreedWithSubBreeds>> onNext,
+                                                Consumer<Throwable> onError) {
+        Log.d(TAG, "updateDogsFromApiWithFavourites: updating dogs");
+        mDogLocalRepository.getAllFavourites(breedWithSubBreeds, onNext, onError);
 
-        Flowable<List<BreedWithSubBreeds>> listFlowable = Flowable
-                .fromCallable(() -> breedWithSubBreeds)
-                .subscribeOn(Schedulers.io());
 
-        return Flowable
-                .zip(allFavourites, listFlowable,
-                        (favourites, apiBreeds) -> {
-                            for (BreedWithSubBreeds favourite : favourites) {
-                                if (apiBreeds.contains(favourite)) {
-                                    int index = apiBreeds.indexOf(favourite);
-                                    apiBreeds.set(index, favourite);
-                                }
-                            }
-                            return apiBreeds;
-                        })
-                .subscribeOn(Schedulers.computation())
-                .observeOn(AndroidSchedulers.mainThread());
     }
 
     public boolean isRequestSent() {

@@ -31,7 +31,7 @@ public class FavouritesViewModel extends ViewModel {
     }
 
     public Flowable<List<BreedWithSubBreeds>> getFavouriteDogs() {
-        return mDogLocalRepository.getAllFavourites();
+        return mDogLocalRepository.getFavouriteDogs();
     }
 
     @Override

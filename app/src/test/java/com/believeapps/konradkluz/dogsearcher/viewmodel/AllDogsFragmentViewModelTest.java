@@ -44,7 +44,7 @@ public class AllDogsFragmentViewModelTest {
         List<BreedWithSubBreeds> breedsToUpdate = prepareApiBreeds();
 
 //        //when
-//        List<BreedWithSubBreeds> breedWithSubBreeds = mAllDogsFragmentViewModel.updateDogs(breedsToUpdate);
+//        List<BreedWithSubBreeds> breedWithSubBreeds = mAllDogsFragmentViewModel.updateDogsFromApiWithFavourites(breedsToUpdate);
 //        for (BreedWithSubBreeds breeds : breedWithSubBreeds) {
 //            System.out.println(breeds.breed.getName() + " : " + breeds.breed.getId());
 //        }

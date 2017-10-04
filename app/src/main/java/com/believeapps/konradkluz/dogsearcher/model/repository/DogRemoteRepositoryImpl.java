@@ -7,9 +7,13 @@ import android.util.Log;
 import com.believeapps.konradkluz.dogsearcher.model.api.DogApiService;
 import com.believeapps.konradkluz.dogsearcher.model.entities.Response;
 
+import org.json.JSONObject;
+
 import javax.inject.Inject;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 
 /**
@@ -40,5 +44,19 @@ public class DogRemoteRepositoryImpl implements DogRemoteRepository {
                 );
         Log.d(TAG, "getAllDogs: request finished");
         return liveData;
+    }
+
+    @Override
+    public Disposable loadImageUrlByBreedName(String breedName,
+                                              Consumer<String> onNext,
+                                              Consumer<Throwable> onError) {
+        return mDogApiService.getImageUrlByBreedName(breedName)
+                .map(responseBody -> {
+                    JSONObject jsonObject = new JSONObject(responseBody.string());
+                    return jsonObject.getString("message");
+                })
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(onNext, onError);
     }
 }

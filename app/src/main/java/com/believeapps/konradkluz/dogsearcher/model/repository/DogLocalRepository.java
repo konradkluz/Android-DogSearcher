@@ -4,7 +4,7 @@ import com.believeapps.konradkluz.dogsearcher.model.entities.BreedWithSubBreeds;
 
 import java.util.List;
 
-import io.reactivex.Flowable;
+import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
 
 /**
@@ -12,11 +12,12 @@ import io.reactivex.functions.Consumer;
  */
 
 public interface DogLocalRepository {
-    Flowable<List<BreedWithSubBreeds>> getFavouriteDogs();
-    void getAllFavourites(List<BreedWithSubBreeds> breedWithSubBreeds,
+    Disposable getFavouriteDogs(Consumer<List<BreedWithSubBreeds>> onNext,
+                                                        Consumer<Throwable> onError);
+    Disposable getAllFavourites(List<BreedWithSubBreeds> breedWithSubBreeds,
                           Consumer<List<BreedWithSubBreeds>> onNext,
                           Consumer<Throwable> onError);
-    void insertFavouriteDog(BreedWithSubBreeds favouriteDog);
+    Disposable insertFavouriteDog(BreedWithSubBreeds favouriteDog);
 
-    void deleteDogFromFavourites(BreedWithSubBreeds favouriteDog);
+    Disposable deleteDogFromFavourites(BreedWithSubBreeds favouriteDog);
 }

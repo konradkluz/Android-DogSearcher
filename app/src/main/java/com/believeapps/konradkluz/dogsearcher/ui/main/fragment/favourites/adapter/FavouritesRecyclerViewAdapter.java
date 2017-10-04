@@ -45,14 +45,22 @@ public class FavouritesRecyclerViewAdapter extends RecyclerView.Adapter<Favourit
     public void onBindViewHolder(DogFavouritesViewHolder holder, int position) {
         if (mFavouritesDogs != null || !mFavouritesDogs.isEmpty()) {
             BreedWithSubBreeds breedWithSubBreeds = mFavouritesDogs.get(position);
-            Breed breed = breedWithSubBreeds.breed;
-            holder.dogImage.setImageResource(R.drawable.ic_image_black_48dp);
-            Picasso.with(mContext).load(breed.getImageUrl())
-                    .error(R.drawable.ic_image_black_48dp)
-                    .placeholder(R.drawable.ic_image_black_48dp)
-                    .into(holder.dogImage);
-            holder.breedName.setText(breed.getName());
+            Breed breed = breedWithSubBreeds.getBreed();
+            fillViewHolder(holder, breed);
         }
+    }
+
+    private void fillViewHolder(DogFavouritesViewHolder holder, Breed breed) {
+        holder.dogImage.setImageResource(R.drawable.ic_image_black_48dp);
+        holder.breedName.setText(breed.getName());
+        loadImageFromUrl(holder, breed.getImageUrl());
+    }
+
+    private void loadImageFromUrl(DogFavouritesViewHolder holder, String imageUrl) {
+        Picasso.with(mContext).load(imageUrl)
+                .error(R.drawable.ic_image_black_48dp)
+                .placeholder(R.drawable.ic_image_black_48dp)
+                .into(holder.dogImage);
     }
 
     @Override

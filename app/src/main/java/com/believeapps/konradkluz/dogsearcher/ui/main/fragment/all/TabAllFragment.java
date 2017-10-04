@@ -67,7 +67,7 @@ public class TabAllFragment extends Fragment implements TabAllView,
 
         mAllDogs.setAdapter(mAllDogsRecyclerViewAdapter);
         mAllDogsRecyclerViewAdapter.setAllDogsItemClickListener(this);
-
+        mAllDogsRecyclerViewAdapter.setViewModel(mAllDogsFragmentViewModel);
         return rootView;
     }
 

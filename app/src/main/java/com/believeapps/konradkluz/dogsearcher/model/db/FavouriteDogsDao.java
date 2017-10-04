@@ -25,7 +25,7 @@ import static android.arch.persistence.room.OnConflictStrategy.REPLACE;
 public interface FavouriteDogsDao {
 
     @Query("select * from breed_favourite")
-    Flowable<List<BreedWithSubBreeds>> getAllFavouriteDogs();
+    Flowable<List<BreedWithSubBreeds>> getFavouriteDogs();
 
     @Query("select * from breed_favourite where name like :name limit 1")
     Single<BreedWithSubBreeds> findByBreed(String name);

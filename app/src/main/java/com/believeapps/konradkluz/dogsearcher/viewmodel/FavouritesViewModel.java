@@ -11,15 +11,13 @@ import javax.inject.Inject;
 
 import io.reactivex.Flowable;
 import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.functions.Consumer;
 
 /**
  * Created by konradkluz on 02/10/2017.
  */
 
 public class FavouritesViewModel extends ViewModel {
-
-//    private final LiveData<List<FavouriteDog>> mFavouriteDogs;
-//    private final MediatorLiveData<List<FavouriteDog>> mFavouriteDogs;
 
     private DogLocalRepository mDogLocalRepository;
     private CompositeDisposable compositeDisposable;
@@ -30,13 +28,14 @@ public class FavouritesViewModel extends ViewModel {
         mDogLocalRepository = localRepository;
     }
 
-    public Flowable<List<BreedWithSubBreeds>> getFavouriteDogs() {
-        return mDogLocalRepository.getFavouriteDogs();
+    public void getFavouriteDogs(
+            Consumer<List<BreedWithSubBreeds>> onNext,
+            Consumer<Throwable> onError) {
+        compositeDisposable.add(mDogLocalRepository.getFavouriteDogs(onNext, onError));
     }
 
     @Override
-    public void onCleared(){
-        //prevents memory leaks by disposing pending observable objects
+    public void onCleared() {
         if (compositeDisposable != null && !compositeDisposable.isDisposed()) {
             compositeDisposable.clear();
         }

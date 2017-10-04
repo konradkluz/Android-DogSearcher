@@ -13,10 +13,10 @@ import java.util.List;
 public class BreedWithSubBreeds implements Serializable{
 
     @Embedded
-    public Breed breed;
+    private Breed breed;
 
     @Relation(parentColumn = "id", entityColumn = "breedId", entity = SubBreed.class)
-    public List<SubBreed> subBreeds;
+    private List<SubBreed> subBreeds;
 
     public Breed getBreed() {
         return breed;

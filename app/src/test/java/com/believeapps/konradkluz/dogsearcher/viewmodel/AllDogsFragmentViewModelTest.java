@@ -38,10 +38,10 @@ public class AllDogsFragmentViewModelTest {
     @Test
     public void updateDogListShouldProperlyUpdateListIfRecordExistsInDb() throws Exception {
         //given
-        Flowable<List<BreedWithSubBreeds>> flowable = Flowable.fromCallable(this::prepareDbBreeds);
-        when(mDogLocalRepository.getAllFavourites()).thenReturn(flowable);
-        //and
-        List<BreedWithSubBreeds> breedsToUpdate = prepareApiBreeds();
+//        Flowable<List<BreedWithSubBreeds>> flowable = Flowable.fromCallable(this::prepareDbBreeds);
+//        when(mDogLocalRepository.getAllFavourites()).thenReturn(flowable);
+//        //and
+//        List<BreedWithSubBreeds> breedsToUpdate = prepareApiBreeds();
 
 //        //when
 //        List<BreedWithSubBreeds> breedWithSubBreeds = mAllDogsFragmentViewModel.updateDogsFromApiWithFavourites(breedsToUpdate);

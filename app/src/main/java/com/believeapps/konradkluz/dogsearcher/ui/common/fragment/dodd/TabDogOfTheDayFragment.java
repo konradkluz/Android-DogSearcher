@@ -51,7 +51,7 @@ public class TabDogOfTheDayFragment extends Fragment implements TabDogOfTheDayVi
             BreedWithSubBreeds breedWithSubBreeds = (BreedWithSubBreeds)arguments.getSerializable("dog");
             if (breedWithSubBreeds != null) {
                 Log.d(TAG, "onCreateView: dog found");
-                Breed breed = breedWithSubBreeds.breed;
+                Breed breed = breedWithSubBreeds.getBreed();
                 mDogName.setText(breed.getName());
 
                 Picasso.with(getActivity()).load(breed.getImageUrl())

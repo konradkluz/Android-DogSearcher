@@ -15,6 +15,7 @@ import com.believeapps.konradkluz.dogsearcher.model.api.DogApiService;
 import com.believeapps.konradkluz.dogsearcher.model.entities.Breed;
 import com.believeapps.konradkluz.dogsearcher.model.entities.BreedWithSubBreeds;
 import com.believeapps.konradkluz.dogsearcher.model.entities.SubBreed;
+import com.believeapps.konradkluz.dogsearcher.viewmodel.AllDogsFragmentViewModel;
 import com.squareup.picasso.Picasso;
 
 import org.json.JSONObject;
@@ -40,6 +41,7 @@ public class AllDogsRecyclerViewAdapter extends RecyclerView.Adapter<AllDogsRecy
 
     private Context mContext;
     private DogViewHolder.AllDogsItemClickListener mAllDogsItemClickListener;
+    private AllDogsFragmentViewModel mAllDogsFragmentViewModel;
     private List<BreedWithSubBreeds> mDogs;
 
     @Inject
@@ -62,60 +64,67 @@ public class AllDogsRecyclerViewAdapter extends RecyclerView.Adapter<AllDogsRecy
     @Override
     public void onBindViewHolder(AllDogsRecyclerViewAdapter.DogViewHolder holder, int position) {
         if (mDogs == null || mDogs.isEmpty()) {
-            Log.d(TAG, "onBindViewHolder: dog list empty");
-            holder.dogThumbnail.setImageResource(R.drawable.ic_image_black_48dp);
-            holder.breedName.setText(R.string.empty_query_search);
-            holder.subBreeds.setText(R.string.empty);
-            holder.addToFavourites.setVisibility(View.GONE);
+            fillEmptyViewHolder(holder);
         } else {
-            Log.d(TAG, "onBindViewHolder: dog list has elements");
-            holder.dogThumbnail.setImageResource(R.drawable.ic_image_black_48dp);
-            BreedWithSubBreeds breedWithSubBreeds = mDogs.get(position);
-
-            Breed breed = breedWithSubBreeds.breed;
-            List<SubBreed> subBreeds = breedWithSubBreeds.subBreeds;
-
-            holder.breedName.setText(breed.getName());
-            holder.subBreeds.setText(subBreeds.toString());
-            holder.addToFavourites.setVisibility(View.VISIBLE);
-            if (breed.getId() != null) {
-                holder.addToFavourites.setTag(android.R.drawable.btn_star_big_on);
-                holder.addToFavourites.setImageResource(android.R.drawable.btn_star_big_on);
-            }else {
-                holder.addToFavourites.setTag(android.R.drawable.btn_star_big_off);
-                holder.addToFavourites.setImageResource(android.R.drawable.btn_star_big_off);
-            }
-
-            if (breed.getImageUrl() != null) {
-                Picasso.with(mContext).load(breed.getImageUrl())
-                        .error(R.drawable.ic_image_black_48dp)
-                        .placeholder(R.drawable.ic_image_black_48dp)
-                        .into(holder.dogThumbnail);
-            } else {
-                mDogApiService.getImageUrlByBreedName(breed.getName())
-                        .map(responseBody -> {
-                            JSONObject jsonObject = new JSONObject(responseBody.string());
-                            return jsonObject.getString("message");
-                        })
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(imageUrl -> {
-                                    Log.d(TAG, "onBindViewHolder: subscribe: " + imageUrl);
-                                    breed.setImageUrl(imageUrl);
-                                    Picasso.with(mContext).load(imageUrl)
-                                            .error(R.drawable.ic_image_black_48dp)
-                                            .placeholder(R.drawable.ic_image_black_48dp)
-                                            .into(holder.dogThumbnail);
-                                }, error ->
-                                        Log.e(TAG, "onBindViewHolder: error occurred: ", error)
-                        );
-            }
+            fillViewHolder(holder, position);
         }
     }
 
     @Override
     public int getItemCount() {
         return mDogs != null && !mDogs.isEmpty() ? mDogs.size() : 1;
+    }
+
+    private void fillViewHolder(DogViewHolder holder, int position) {
+        Log.d(TAG, "onBindViewHolder: dog list has elements");
+        BreedWithSubBreeds breedWithSubBreeds = mDogs.get(position);
+
+        Breed breed = breedWithSubBreeds.getBreed();
+        List<SubBreed> subBreeds = breedWithSubBreeds.getSubBreeds();
+
+        holder.dogThumbnail.setImageResource(R.drawable.ic_image_black_48dp);
+        holder.breedName.setText(breed.getName());
+        holder.subBreeds.setText(subBreeds.toString());
+        holder.addToFavourites.setVisibility(View.VISIBLE);
+        if (breed.getId() != null) {
+            holder.addToFavourites.setTag(android.R.drawable.btn_star_big_on);
+            holder.addToFavourites.setImageResource(android.R.drawable.btn_star_big_on);
+        } else {
+            holder.addToFavourites.setTag(android.R.drawable.btn_star_big_off);
+            holder.addToFavourites.setImageResource(android.R.drawable.btn_star_big_off);
+        }
+
+        loadImageFromUrl(holder, breed);
+    }
+
+    private void fillEmptyViewHolder(DogViewHolder holder) {
+        Log.d(TAG, "onBindViewHolder: dog list empty");
+        holder.dogThumbnail.setImageResource(R.drawable.ic_image_black_48dp);
+        holder.breedName.setText(R.string.empty_query_search);
+        holder.subBreeds.setText(R.string.empty);
+        holder.addToFavourites.setVisibility(View.GONE);
+    }
+
+    private void loadImageFromUrl(DogViewHolder holder, Breed breed) {
+        if (breed.getImageUrl() != null) {
+            loadImageFromUrl(holder, breed.getImageUrl());
+        } else {
+            mAllDogsFragmentViewModel.loadImageUrlByBreedName(
+                    breed.getName(),
+                    imageUrl -> {
+                        Log.d(TAG, "onBindViewHolder: subscribe: " + imageUrl);
+                        breed.setImageUrl(imageUrl);
+                        loadImageFromUrl(holder, imageUrl);
+                    },
+                    error -> Log.e(TAG, "onBindViewHolder: error occurred: ", error));
+        }
+    }
+
+    private void loadImageFromUrl(DogViewHolder holder, String imageUrl) {
+        Picasso.with(mContext).load(imageUrl)
+                .error(R.drawable.ic_image_black_48dp)
+                .placeholder(R.drawable.ic_image_black_48dp)
+                .into(holder.dogThumbnail);
     }
 
     public void swapSource(List<BreedWithSubBreeds> dogs) {
@@ -129,6 +138,10 @@ public class AllDogsRecyclerViewAdapter extends RecyclerView.Adapter<AllDogsRecy
 
     public void setAllDogsItemClickListener(DogViewHolder.AllDogsItemClickListener allDogsItemClickListener) {
         mAllDogsItemClickListener = allDogsItemClickListener;
+    }
+
+    public void setViewModel(AllDogsFragmentViewModel viewModel) {
+        mAllDogsFragmentViewModel = viewModel;
     }
 
     public static class DogViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {

@@ -12,6 +12,7 @@ import javax.inject.Inject;
 
 import io.reactivex.Flowable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 
@@ -31,21 +32,25 @@ public class DogLocalRepositoryImpl implements DogLocalRepository {
     }
 
     @Override
-    public Flowable<List<BreedWithSubBreeds>> getFavouriteDogs() {
-        return mFavouriteDogsDao.getAllFavouriteDogs();
+    public Disposable getFavouriteDogs(Consumer<List<BreedWithSubBreeds>> onNext,
+                                                               Consumer<Throwable> onError) {
+        return mFavouriteDogsDao.getFavouriteDogs()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(onNext, onError);
     }
 
     @Override
-    public void getAllFavourites(
+    public Disposable getAllFavourites(
             List<BreedWithSubBreeds> breedWithSubBreeds,
             Consumer<List<BreedWithSubBreeds>> onNext,
             Consumer<Throwable> onError) {
-        Flowable<List<BreedWithSubBreeds>> allFavourites = mFavouriteDogsDao.getAllFavouriteDogs();
+        Flowable<List<BreedWithSubBreeds>> allFavourites = mFavouriteDogsDao.getFavouriteDogs();
 
         Flowable<List<BreedWithSubBreeds>> listFlowable = Flowable
                 .fromCallable(() -> breedWithSubBreeds);
 
-        Flowable
+        return Flowable
                 .zip(allFavourites, listFlowable,
                         (favourites, apiBreeds) -> {
                             for (BreedWithSubBreeds favourite : favourites) {
@@ -62,14 +67,14 @@ public class DogLocalRepositoryImpl implements DogLocalRepository {
     }
 
     @Override
-    public void insertFavouriteDog(BreedWithSubBreeds favouriteDog) {
-        Flowable.fromCallable(() -> mFavouriteDogsDao.insert(favouriteDog.breed))
+    public Disposable insertFavouriteDog(BreedWithSubBreeds favouriteDog) {
+        return Flowable.fromCallable(() -> mFavouriteDogsDao.insert(favouriteDog.getBreed()))
                 .flatMap(breedId -> {
-                    for (SubBreed subBreed : favouriteDog.subBreeds) {
+                    for (SubBreed subBreed : favouriteDog.getSubBreeds()) {
                         subBreed.setBreedId(breedId);
                     }
-                    if (favouriteDog.subBreeds != null && !favouriteDog.subBreeds.isEmpty()) {
-                        return Flowable.fromCallable(() -> mFavouriteDogsDao.insertAllSubBreeds(favouriteDog.subBreeds));
+                    if (favouriteDog.getSubBreeds() != null && !favouriteDog.getSubBreeds().isEmpty()) {
+                        return Flowable.fromCallable(() -> mFavouriteDogsDao.insertAllSubBreeds(favouriteDog.getSubBreeds()));
                     }
                     return Flowable.empty();
                 })
@@ -78,16 +83,16 @@ public class DogLocalRepositoryImpl implements DogLocalRepository {
                 .subscribe(
                         id -> Log.d(TAG, "persistFavouriteDog: favourite inserted: " + id),
                         error -> Log.e(TAG, "persistFavouriteDog: error occurred: ", error),
-                        () -> Log.d(TAG, "persistFavouriteDog: breed persisted: " + favouriteDog.breed)
+                        () -> Log.d(TAG, "persistFavouriteDog: breed persisted: " + favouriteDog.getBreed())
                 );
     }
 
     @Override
-    public void deleteDogFromFavourites(BreedWithSubBreeds favouriteDog) {
-        Flowable.fromCallable(() -> mFavouriteDogsDao.delete(favouriteDog.breed))
+    public Disposable deleteDogFromFavourites(BreedWithSubBreeds favouriteDog) {
+        return Flowable.fromCallable(() -> mFavouriteDogsDao.delete(favouriteDog.getBreed()))
                 .flatMap(numberOfRows -> {
-                    if (favouriteDog.subBreeds != null && !favouriteDog.subBreeds.isEmpty()) {
-                        return Flowable.fromCallable(() -> mFavouriteDogsDao.deleteAllSubBreeds(favouriteDog.subBreeds));
+                    if (favouriteDog.getSubBreeds() != null && !favouriteDog.getSubBreeds().isEmpty()) {
+                        return Flowable.fromCallable(() -> mFavouriteDogsDao.deleteAllSubBreeds(favouriteDog.getSubBreeds()));
                     }
                     return Flowable.empty();
                 })
@@ -97,8 +102,8 @@ public class DogLocalRepositoryImpl implements DogLocalRepository {
                         numberOfRows -> Log.d(TAG, "deleted: " + numberOfRows + "sub breeds"),
                         error -> Log.e(TAG, "deleting sub breeds: error occurred: ", error),
                         () -> {
-                            Log.d(TAG, "deleteDogFromFavourites: breed deleted: " + favouriteDog.breed);
-                            favouriteDog.breed.setId(null);
+                            Log.d(TAG, "deleteDogFromFavourites: breed deleted: " + favouriteDog.getBreed());
+                            favouriteDog.getBreed().setId(null);
                         }
                 );
     }

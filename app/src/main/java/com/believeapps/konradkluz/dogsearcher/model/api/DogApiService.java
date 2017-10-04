@@ -4,6 +4,7 @@ import com.believeapps.konradkluz.dogsearcher.model.entities.BreedWithSubBreeds;
 
 import java.util.List;
 
+import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import okhttp3.ResponseBody;
 import retrofit2.http.GET;
@@ -18,5 +19,5 @@ public interface DogApiService {
     Observable<List<BreedWithSubBreeds>> getAllDogs();
 
     @GET("/api/breed/{breedName}/images/random")
-    Observable<ResponseBody> getImageUrlByBreedName(@Path("breedName") String breedName);
+    Flowable<ResponseBody> getImageUrlByBreedName(@Path("breedName") String breedName);
 }

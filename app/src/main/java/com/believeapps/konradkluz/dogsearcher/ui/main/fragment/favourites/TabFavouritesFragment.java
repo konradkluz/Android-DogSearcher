@@ -36,8 +36,6 @@ public class TabFavouritesFragment extends Fragment implements TabFavouritesView
 
     private static final String TAG = "TabFavouritesFragment";
 
-    CompositeDisposable mCompositeDisposable;
-
     FavouritesViewModel mFavouritesViewModel;
 
     @Inject
@@ -65,13 +63,15 @@ public class TabFavouritesFragment extends Fragment implements TabFavouritesView
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         mRecyclerView.setAdapter(mFavouritesRecyclerViewAdapter);
 
-        mCompositeDisposable = new CompositeDisposable();
-        mCompositeDisposable.add(mFavouritesViewModel.getFavouriteDogs()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(favouriteDogs -> mFavouritesRecyclerViewAdapter.swapSource(favouriteDogs),
-                        error -> Log.e(TAG, "onCreateView: error occurred", error)));
-
         return rootView;
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        mFavouritesViewModel.getFavouriteDogs(
+                favouriteDogs -> mFavouritesRecyclerViewAdapter.swapSource(favouriteDogs),
+                error -> Log.e(TAG, "onCreateView: error occurred", error)
+        );
     }
 }

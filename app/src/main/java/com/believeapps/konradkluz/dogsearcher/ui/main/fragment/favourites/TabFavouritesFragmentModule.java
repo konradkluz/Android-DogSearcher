@@ -1,6 +1,9 @@
 package com.believeapps.konradkluz.dogsearcher.ui.main.fragment.favourites;
 
+import android.support.v7.widget.RecyclerView;
+
 import com.believeapps.konradkluz.dogsearcher.ui.main.MainActivity;
+import com.believeapps.konradkluz.dogsearcher.ui.main.fragment.favourites.adapter.DogFavouritesViewHolder;
 import com.believeapps.konradkluz.dogsearcher.ui.main.fragment.favourites.adapter.FavouritesRecyclerViewAdapter;
 
 import dagger.Module;
@@ -18,7 +21,7 @@ public class TabFavouritesFragmentModule {
     }
 
     @Provides
-    FavouritesRecyclerViewAdapter providesAdapter(MainActivity mainActivity) {
-        return new FavouritesRecyclerViewAdapter(mainActivity);
+    RecyclerView.Adapter<DogFavouritesViewHolder> providesAdapter(FavouritesRecyclerViewAdapter adapter) {
+        return adapter;
     }
 }

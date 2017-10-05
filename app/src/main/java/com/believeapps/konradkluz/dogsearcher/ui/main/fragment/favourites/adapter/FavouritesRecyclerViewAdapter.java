@@ -5,8 +5,6 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.TextView;
 
 import com.believeapps.konradkluz.dogsearcher.R;
 import com.believeapps.konradkluz.dogsearcher.model.entities.Breed;
@@ -16,22 +14,23 @@ import com.squareup.picasso.Picasso;
 import java.util.ArrayList;
 import java.util.List;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
+import javax.inject.Inject;
 
 /**
  * Created by konradkluz on 29/09/2017.
  */
 
-public class FavouritesRecyclerViewAdapter extends RecyclerView.Adapter<FavouritesRecyclerViewAdapter.DogFavouritesViewHolder>{
+public class FavouritesRecyclerViewAdapter extends RecyclerView.Adapter<DogFavouritesViewHolder>{
 
     private static final String TAG = "FavouritesRecyclerViewA";
 
-    private Context mContext;
+    @Inject
+    Context mContext;
+
     private List<BreedWithSubBreeds> mFavouritesDogs;
 
-    public FavouritesRecyclerViewAdapter(Context context) {
-        mContext = context;
+    @Inject
+    public FavouritesRecyclerViewAdapter() {
         mFavouritesDogs = new ArrayList<>();
     }
 
@@ -51,8 +50,15 @@ public class FavouritesRecyclerViewAdapter extends RecyclerView.Adapter<Favourit
     }
 
     private void fillViewHolder(DogFavouritesViewHolder holder, Breed breed) {
-        holder.dogImage.setImageResource(R.drawable.ic_image_black_48dp);
-        holder.breedName.setText(breed.getName());
+        holder.mDogImage.setImageResource(R.drawable.ic_image_black_48dp);
+        holder.mBreedName.setText(breed.getName());
+        if (breed.getId() != null) {
+            holder.mAddToFavourites.setTag(android.R.drawable.btn_star_big_on);
+            holder.mAddToFavourites.setImageResource(android.R.drawable.btn_star_big_on);
+        } else {
+            holder.mAddToFavourites.setTag(android.R.drawable.btn_star_big_off);
+            holder.mAddToFavourites.setImageResource(android.R.drawable.btn_star_big_off);
+        }
         loadImageFromUrl(holder, breed.getImageUrl());
     }
 
@@ -60,7 +66,7 @@ public class FavouritesRecyclerViewAdapter extends RecyclerView.Adapter<Favourit
         Picasso.with(mContext).load(imageUrl)
                 .error(R.drawable.ic_image_black_48dp)
                 .placeholder(R.drawable.ic_image_black_48dp)
-                .into(holder.dogImage);
+                .into(holder.mDogImage);
     }
 
     @Override
@@ -72,19 +78,4 @@ public class FavouritesRecyclerViewAdapter extends RecyclerView.Adapter<Favourit
         mFavouritesDogs = dogs;
         notifyDataSetChanged();
     }
-
-    static class DogFavouritesViewHolder extends RecyclerView.ViewHolder {
-        @BindView(R.id.dog_day_image)
-        ImageView dogImage;
-
-        @BindView(R.id.dog_day_name)
-        TextView breedName;
-
-        public DogFavouritesViewHolder(View itemView) {
-            super(itemView);
-            ButterKnife.bind(this, itemView);
-        }
-    }
-
-
 }

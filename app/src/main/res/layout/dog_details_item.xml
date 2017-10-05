@@ -32,12 +32,34 @@
                 android:scaleType="fitCenter"
                 android:src="@drawable/ic_image_black_48dp"/>
 
-            <TextView
-                android:id="@+id/dog_day_name"
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="8dp"
-                tools:text="@string/dog_breed_name_placeholder"/>
+                android:layout_height="match_parent"
+                android:orientation="horizontal"
+                android:weightSum="6">
+
+                <TextView
+                    android:id="@+id/dog_day_name"
+                    android:layout_width="0dp"
+                    android:layout_height="49dp"
+                    android:layout_margin="8dp"
+                    android:layout_weight="5"
+                    android:gravity="center_vertical"
+                    android:textAllCaps="false"
+                    android:textSize="18sp"
+                    tools:text="@string/dog_breed_name_placeholder"/>
+
+                <ImageButton
+                    android:id="@+id/dog_details_item_add_to_favourites_button"
+                    android:layout_width="0dp"
+                    android:layout_height="49dp"
+                    android:layout_margin="8dp"
+                    android:layout_weight="1"
+                    android:background="@android:color/transparent"
+                    android:scaleType="fitCenter"
+                    android:src="@android:drawable/btn_star_big_off"/>
+            </LinearLayout>
+
         </LinearLayout>
     </android.support.v7.widget.CardView>
 

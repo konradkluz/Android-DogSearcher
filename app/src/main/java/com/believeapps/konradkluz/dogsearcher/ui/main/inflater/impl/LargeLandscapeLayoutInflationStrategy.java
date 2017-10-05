@@ -1,6 +1,5 @@
 package com.believeapps.konradkluz.dogsearcher.ui.main.inflater.impl;
 
-import android.content.Intent;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -11,9 +10,9 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import com.believeapps.konradkluz.dogsearcher.R;
-import com.believeapps.konradkluz.dogsearcher.ui.detail.DogDetailActivity;
-import com.believeapps.konradkluz.dogsearcher.ui.main.fragment.all.TabAllFragment;
 import com.believeapps.konradkluz.dogsearcher.ui.common.fragment.dodd.TabDogOfTheDayFragment;
+import com.believeapps.konradkluz.dogsearcher.ui.main.MainActivity;
+import com.believeapps.konradkluz.dogsearcher.ui.main.fragment.all.TabAllFragment;
 import com.believeapps.konradkluz.dogsearcher.ui.main.fragment.favourites.TabFavouritesFragment;
 import com.believeapps.konradkluz.dogsearcher.ui.main.inflater.LayoutInflationStrategy;
 
@@ -30,15 +29,20 @@ public class LargeLandscapeLayoutInflationStrategy implements LayoutInflationStr
 
     private static final String TAG = "LargeLandscapeViewIniti";
 
-    private AppCompatActivity mActivity;
+    private MainActivity mActivity;
+    private TabAllFragment mTabAllFragment;
+    private TabFavouritesFragment mTabFavouritesFragment;
+    private TabDogOfTheDayFragment mTabDogOfTheDayFragment;
 
     @BindView(R.id.landscape_tab_view)
     ListView mLandscapeTabView;
 
-    public LargeLandscapeLayoutInflationStrategy(AppCompatActivity activity) {
+    public LargeLandscapeLayoutInflationStrategy(MainActivity activity, TabAllFragment tabAllFragment, TabFavouritesFragment tabFavouritesFragment, TabDogOfTheDayFragment tabDogOfTheDayFragment) {
+        mTabAllFragment = tabAllFragment;
+        mTabFavouritesFragment = tabFavouritesFragment;
+        mTabDogOfTheDayFragment = tabDogOfTheDayFragment;
         mActivity = activity;
         ButterKnife.bind(this, mActivity);
-        ButterKnife.setDebug(true);
     }
 
     @Override
@@ -53,13 +57,13 @@ public class LargeLandscapeLayoutInflationStrategy implements LayoutInflationStr
         Fragment fragment;
         switch (viewPosition) {
             case 0:
-                fragment = new TabAllFragment();
+                fragment = mTabAllFragment;
                 break;
             case 1:
-                fragment = new TabDogOfTheDayFragment();
+                fragment = mTabDogOfTheDayFragment;
                 break;
             case 2:
-                fragment = new TabFavouritesFragment();
+                fragment = mTabFavouritesFragment;
                 break;
             default:
                 throw new IllegalArgumentException("View on position: " + viewPosition + "does not exist." );
@@ -72,6 +76,7 @@ public class LargeLandscapeLayoutInflationStrategy implements LayoutInflationStr
 
     private void initializeLandscapeTabBar() {
         Log.d(TAG, "initializeLandscapeTabBar: initializing landscape side tab bar");
+//        mLandscapeTabView = mActivity.findViewById(R.id.landscape_tab_view);
         ArrayAdapter<String> stringArrayAdapter =
                 new ArrayAdapter<>(
                         mActivity,

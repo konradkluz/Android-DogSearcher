@@ -1,9 +1,12 @@
 package com.believeapps.konradkluz.dogsearcher.model.repository;
 
+import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.MutableLiveData;
 import android.util.Log;
 
 import com.believeapps.konradkluz.dogsearcher.model.db.FavouriteDogsDao;
 import com.believeapps.konradkluz.dogsearcher.model.entities.BreedWithSubBreeds;
+import com.believeapps.konradkluz.dogsearcher.model.entities.Response;
 import com.believeapps.konradkluz.dogsearcher.model.entities.SubBreed;
 
 import java.util.List;
@@ -32,12 +35,17 @@ public class DogLocalRepositoryImpl implements DogLocalRepository {
     }
 
     @Override
-    public Disposable getFavouriteDogs(Consumer<List<BreedWithSubBreeds>> onNext,
-                                                               Consumer<Throwable> onError) {
-        return mFavouriteDogsDao.getFavouriteDogs()
+    public LiveData<Response> getFavouriteDogs() {
+        Log.d(TAG, "getFavouriteDogs: getting favourite dogs from db");
+        final MutableLiveData<Response> liveData = new MutableLiveData<>();
+        mFavouriteDogsDao.getFavouriteDogs()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(onNext, onError);
+                .subscribe(
+                        response -> liveData.setValue(Response.success(response)),
+                        error -> liveData.setValue(Response.error(error))
+                );
+        return liveData;
     }
 
     @Override

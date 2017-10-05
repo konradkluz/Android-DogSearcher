@@ -13,20 +13,19 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.believeapps.konradkluz.dogsearcher.R;
+import com.believeapps.konradkluz.dogsearcher.model.entities.BreedWithSubBreeds;
+import com.believeapps.konradkluz.dogsearcher.model.entities.Status;
 import com.believeapps.konradkluz.dogsearcher.ui.main.fragment.favourites.adapter.FavouritesRecyclerViewAdapter;
-import com.believeapps.konradkluz.dogsearcher.viewmodel.AllDogsFragmentViewModel;
 import com.believeapps.konradkluz.dogsearcher.viewmodel.FavouritesViewModel;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import dagger.android.support.AndroidSupportInjection;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.schedulers.Schedulers;
-
-import static java.util.Arrays.asList;
 
 /**
  * Created by konradkluz on 28/09/2017.
@@ -46,6 +45,10 @@ public class TabFavouritesFragment extends Fragment implements TabFavouritesView
 
     @BindView(R.id.favourites_dogs_list)
     RecyclerView mRecyclerView;
+
+    @Inject
+    public TabFavouritesFragment() {
+    }
 
     @Override
     public void onAttach(Context context) {
@@ -69,9 +72,21 @@ public class TabFavouritesFragment extends Fragment implements TabFavouritesView
     @Override
     public void onStart() {
         super.onStart();
-        mFavouritesViewModel.getFavouriteDogs(
-                favouriteDogs -> mFavouritesRecyclerViewAdapter.swapSource(favouriteDogs),
-                error -> Log.e(TAG, "onCreateView: error occurred", error)
-        );
+        mFavouritesViewModel.getDbResponse().observe(this, response -> {
+            if (response.status == Status.ERROR) {
+                mFavouritesRecyclerViewAdapter.swapSource(new ArrayList<>());
+                Log.e(TAG, "onCreateView: error occurred", response.error);
+            } else {
+                List<BreedWithSubBreeds> breedWithSubBreeds = (List<BreedWithSubBreeds>) response.data;
+                mFavouritesRecyclerViewAdapter.swapSource(breedWithSubBreeds);
+                Log.d(TAG, "onCreateView: response succeed: " + response.data);
+            }
+        });
+
+        //TODO how to verify request sent
+        if (!mFavouritesViewModel.isRequestSent()) {
+            Log.d(TAG, "onStart: loading dogs from db");
+            mFavouritesViewModel.getFavouriteDogs();
+        }
     }
 }

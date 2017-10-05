@@ -18,6 +18,7 @@ import com.believeapps.konradkluz.dogsearcher.model.entities.BreedWithSubBreeds;
 import com.believeapps.konradkluz.dogsearcher.model.entities.Status;
 import com.believeapps.konradkluz.dogsearcher.ui.detail.DogDetailActivity;
 import com.believeapps.konradkluz.dogsearcher.ui.main.fragment.all.adapter.AllDogsRecyclerViewAdapter;
+import com.believeapps.konradkluz.dogsearcher.ui.main.fragment.all.adapter.DogViewHolder;
 import com.believeapps.konradkluz.dogsearcher.viewmodel.AllDogsFragmentViewModel;
 
 import java.util.ArrayList;
@@ -34,7 +35,7 @@ import dagger.android.support.AndroidSupportInjection;
  */
 
 public class TabAllFragment extends Fragment implements TabAllView,
-        AllDogsRecyclerViewAdapter.DogViewHolder.AllDogsItemClickListener {
+        DogViewHolder.AllDogsItemClickListener {
 
     private static final String TAG = "TabAllFragment";
 
@@ -48,6 +49,10 @@ public class TabAllFragment extends Fragment implements TabAllView,
 
     @BindView(R.id.all_dogs_list)
     RecyclerView mAllDogs;
+
+    @Inject
+    public TabAllFragment() {
+    }
 
     @Override
     public void onAttach(Context context) {
@@ -93,6 +98,7 @@ public class TabAllFragment extends Fragment implements TabAllView,
 
         //TODO how to verify request sent
         if (!mAllDogsFragmentViewModel.isRequestSent()) {
+            Log.d(TAG, "onStart: loading dogs from api");
             mAllDogsFragmentViewModel.loadDogs();
         }
     }

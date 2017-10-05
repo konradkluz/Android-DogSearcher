@@ -10,7 +10,10 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
+import com.believeapps.konradkluz.dogsearcher.ui.common.fragment.dodd.TabDogOfTheDayFragment;
+import com.believeapps.konradkluz.dogsearcher.ui.main.fragment.all.TabAllFragment;
 import com.believeapps.konradkluz.dogsearcher.ui.main.fragment.all.adapter.listener.AllDogsRecyclerItemClickListener;
+import com.believeapps.konradkluz.dogsearcher.ui.main.fragment.favourites.TabFavouritesFragment;
 import com.believeapps.konradkluz.dogsearcher.ui.main.inflater.LayoutInflationStrategy;
 import com.believeapps.konradkluz.dogsearcher.R;
 import com.believeapps.konradkluz.dogsearcher.ui.main.inflater.impl.LargeLandscapeLayoutInflationStrategy;
@@ -30,10 +33,16 @@ public class MainActivity extends AppCompatActivity implements MainView, HasSupp
     @Inject
     DispatchingAndroidInjector<Fragment> mFragmentDispatchingAndroidInjector;
 
-//    @Inject
     LayoutInflationStrategy mLayoutInflationStrategy;
 
-    private boolean mTwoPane = false;
+    @Inject
+    TabAllFragment mTabAllFragment;
+
+    @Inject
+    TabFavouritesFragment mTabFavouritesFragment;
+
+    @Inject
+    TabDogOfTheDayFragment mTabDogOfTheDayFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,29 +52,28 @@ public class MainActivity extends AppCompatActivity implements MainView, HasSupp
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         if (findViewById(R.id.landscape_tab_view) != null) {
-            mLayoutInflationStrategy = new LargeLandscapeLayoutInflationStrategy(this);
-            mTwoPane = true;
+            mLayoutInflationStrategy = new LargeLandscapeLayoutInflationStrategy(this,
+                    mTabAllFragment,
+                    mTabFavouritesFragment,
+                    mTabDogOfTheDayFragment);
         } else {
-            mLayoutInflationStrategy = new PortraitLayoutInflationStrategy(this);
+            mLayoutInflationStrategy = new PortraitLayoutInflationStrategy(this,
+                    mTabAllFragment,
+                    mTabFavouritesFragment,
+                    mTabDogOfTheDayFragment);
         }
         mLayoutInflationStrategy.inflate();
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             return true;
         }

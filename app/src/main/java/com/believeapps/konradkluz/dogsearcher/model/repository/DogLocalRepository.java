@@ -30,7 +30,11 @@ public interface DogLocalRepository {
 
     void insertDogOfTheDay(DogOfTheDay dogOfTheDay);
 
+    void deleteDogOfTheDay(DogOfTheDay dogOfTheDay);
+
     void deleteDogFromFavourites(BreedWithSubBreeds favouriteDog);
 
     Maybe<DogOfTheDay> findFavouriteByName(String name);
+
+    void deleteDogFromFavouritesByName(String breedName);
 }

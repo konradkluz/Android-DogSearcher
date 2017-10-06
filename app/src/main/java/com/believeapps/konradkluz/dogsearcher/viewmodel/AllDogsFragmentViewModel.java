@@ -51,6 +51,7 @@ public class AllDogsFragmentViewModel extends ViewModel {
         return mApiResponse;
     }
 
+    //TODO all dogs view does not listen to changes in favourites
     public LiveData<Response> loadDogs() {
         mApiResponse.addSource(
                 mDogRemoteRepository.getAllDogs(),
@@ -61,13 +62,14 @@ public class AllDogsFragmentViewModel extends ViewModel {
 
     public void persistFavouriteDog(BreedWithSubBreeds favouriteDog) {
         Log.d(TAG, "persistFavouriteDog: persisting favourite dog: " + favouriteDog);
-
         mDogLocalRepository.insertFavouriteDog(favouriteDog);
+        Log.d(TAG, "persistFavouriteDog: dog persisted: " + favouriteDog);
     }
 
     public void deleteDogFromFavourites(BreedWithSubBreeds favouriteDog) {
         Log.d(TAG, "deleteDogFromFavourites: deleting from favourites: " + favouriteDog);
         mDogLocalRepository.deleteDogFromFavourites(favouriteDog);
+        Log.d(TAG, "deleteDogFromFavourites: dog deleted: " + favouriteDog);
     }
 
     public void updateDogsFromApiWithFavourites(List<BreedWithSubBreeds> breedWithSubBreeds,

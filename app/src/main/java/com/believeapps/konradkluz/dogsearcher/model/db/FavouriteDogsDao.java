@@ -50,6 +50,9 @@ public interface FavouriteDogsDao {
     @Delete
     int delete(Breed favouriteDog);
 
+    @Delete()
+    int delete(DogOfTheDay dogOfTheDay);
+
     @Delete
     int deleteAllSubBreeds(List<SubBreed> subBreeds);
 

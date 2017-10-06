@@ -1,8 +1,8 @@
 package com.believeapps.konradkluz.dogsearcher.ui.detail;
 
-//import com.believeapps.konradkluz.dogsearcher.ui.common.fragment.dodd.TabDogOfTheDayFragmentComponent;
+import android.arch.lifecycle.ViewModel;
 
-import com.believeapps.konradkluz.dogsearcher.ui.common.fragment.dodd.TabDogOfTheDayFragmentComponent;
+import com.believeapps.konradkluz.dogsearcher.viewmodel.DogDetailActivityModel;
 
 import dagger.Module;
 import dagger.Provides;
@@ -11,13 +11,15 @@ import dagger.Provides;
  * Created by konradkluz on 30/09/2017.
  */
 @Module
-        (subcomponents = {TabDogOfTheDayFragmentComponent.class})
 public class DogDetailActivityModule {
-
 
     @Provides
     DogDetailView provideDogDetailView(DogDetailActivity dogDetailActivity) {
         return dogDetailActivity;
     }
 
+    @Provides
+    ViewModel provideDogDetailViewModel(DogDetailActivityModel dogDetailActivityModel) {
+        return dogDetailActivityModel;
+    }
 }

@@ -27,6 +27,8 @@ public class FavouritesRecyclerViewAdapter extends RecyclerView.Adapter<DogFavou
     @Inject
     Context mContext;
 
+    private DogFavouritesViewHolder.FavouritesItemClickListener mFavouritesItemClickListener;
+
     private List<BreedWithSubBreeds> mFavouritesDogs;
 
     @Inject
@@ -37,7 +39,7 @@ public class FavouritesRecyclerViewAdapter extends RecyclerView.Adapter<DogFavou
     @Override
     public DogFavouritesViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(mContext).inflate(R.layout.dog_details_item, parent, false);
-        return new DogFavouritesViewHolder(view);
+        return new DogFavouritesViewHolder(view, mFavouritesItemClickListener);
     }
 
     @Override
@@ -77,5 +79,17 @@ public class FavouritesRecyclerViewAdapter extends RecyclerView.Adapter<DogFavou
     public void swapSource(List<BreedWithSubBreeds> dogs) {
         mFavouritesDogs = dogs;
         notifyDataSetChanged();
+    }
+
+    public BreedWithSubBreeds getBreed(int position) {
+        return mFavouritesDogs != null && !mFavouritesDogs.isEmpty() ? mFavouritesDogs.get(position) : null;
+    }
+
+    public DogFavouritesViewHolder.FavouritesItemClickListener getFavouritesItemClickListener() {
+        return mFavouritesItemClickListener;
+    }
+
+    public void setFavouritesItemClickListener(DogFavouritesViewHolder.FavouritesItemClickListener favouritesItemClickListener) {
+        mFavouritesItemClickListener = favouritesItemClickListener;
     }
 }

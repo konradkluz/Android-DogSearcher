@@ -17,13 +17,17 @@ public class ViewModelFactory implements ViewModelProvider.Factory {
 
     private DogOfTheDayFragmentModel mDogOfTheDayFragmentModel;
 
+    private DogDetailActivityModel mDogDetailActivityModel;
+
     @Inject
     public ViewModelFactory(AllDogsFragmentViewModel allDogsFragmentViewModel,
                             FavouritesViewModel favouritesViewModel,
-                            DogOfTheDayFragmentModel dogOfTheDayFragmentModel) {
+                            DogOfTheDayFragmentModel dogOfTheDayFragmentModel,
+                            DogDetailActivityModel dogDetailActivityModel) {
         mAllDogsFragmentViewModel = allDogsFragmentViewModel;
         mFavouritesViewModel = favouritesViewModel;
         mDogOfTheDayFragmentModel = dogOfTheDayFragmentModel;
+        mDogDetailActivityModel = dogDetailActivityModel;
     }
 
     @Override
@@ -34,6 +38,8 @@ public class ViewModelFactory implements ViewModelProvider.Factory {
             return (T) mFavouritesViewModel;
         }else if (modelClass.isAssignableFrom(DogOfTheDayFragmentModel.class)) {
             return (T) mDogOfTheDayFragmentModel;
+        }else if (modelClass.isAssignableFrom(DogDetailActivityModel.class)) {
+            return (T) mDogDetailActivityModel;
         }
         throw new IllegalArgumentException("Unknown class name");
     }

@@ -6,6 +6,7 @@ import android.arch.lifecycle.ViewModel;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
+import com.believeapps.konradkluz.dogsearcher.model.entities.BreedWithSubBreeds;
 import com.believeapps.konradkluz.dogsearcher.model.entities.Response;
 import com.believeapps.konradkluz.dogsearcher.model.repository.DogLocalRepository;
 
@@ -46,6 +47,19 @@ public class FavouritesViewModel extends ViewModel {
                 mDbResponse::setValue);
         requestSent = true;
         return mDbResponse;
+    }
+
+    public void persistFavouriteDog(BreedWithSubBreeds favouriteDog) {
+        Log.d(TAG, "persistFavouriteDog: persisting favourite dog: " + favouriteDog);
+        mDogLocalRepository.insertFavouriteDog(favouriteDog);
+        Log.d(TAG, "persistFavouriteDog: dog persisted: " + favouriteDog);
+    }
+
+    //TODO id deleted dog is dog of the day it does not change dog_of_the_day_table
+    public void deleteDogFromFavourites(BreedWithSubBreeds favouriteDog) {
+        Log.d(TAG, "deleteDogFromFavourites: deleting from favourites: " + favouriteDog);
+        mDogLocalRepository.deleteDogFromFavourites(favouriteDog);
+        Log.d(TAG, "deleteDogFromFavourites: dog deleted: " + favouriteDog);
     }
 
     @Override

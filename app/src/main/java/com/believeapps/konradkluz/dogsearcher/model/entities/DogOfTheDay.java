@@ -22,6 +22,8 @@ public class DogOfTheDay {
     @ColumnInfo(name = "favourite")
     private boolean isFavourite;
 
+    private Long expirationDateMillis;
+
     public Long getId() {
         return id;
     }
@@ -52,6 +54,14 @@ public class DogOfTheDay {
 
     public void setFavourite(boolean favourite) {
         isFavourite = favourite;
+    }
+
+    public Long getExpirationDateMillis() {
+        return expirationDateMillis;
+    }
+
+    public void setExpirationDateMillis(Long expirationDateMillis) {
+        this.expirationDateMillis = expirationDateMillis;
     }
 
     @Override

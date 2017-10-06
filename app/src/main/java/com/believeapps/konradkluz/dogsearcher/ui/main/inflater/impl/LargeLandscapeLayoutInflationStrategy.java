@@ -51,7 +51,6 @@ public class LargeLandscapeLayoutInflationStrategy implements LayoutInflationStr
         initializeLandscapeContent(0);
     }
 
-    //TODO think about it
     private void initializeLandscapeContent(int viewPosition) {
         Log.d(TAG, "initializeLandscapeContent: initializing landscape content");
         Fragment fragment;

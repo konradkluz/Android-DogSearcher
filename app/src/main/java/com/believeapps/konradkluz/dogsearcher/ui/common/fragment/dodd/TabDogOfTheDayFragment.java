@@ -23,6 +23,7 @@ import com.believeapps.konradkluz.dogsearcher.viewmodel.DogOfTheDayFragmentModel
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -31,11 +32,13 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import dagger.android.support.AndroidSupportInjection;
 
+import static java.util.Collections.emptyList;
+
 /**
  * Created by konradkluz on 28/09/2017.
  */
 
-public class TabDogOfTheDayFragment extends Fragment implements TabDogOfTheDayView {
+public class TabDogOfTheDayFragment extends Fragment implements TabDogOfTheDayView, View.OnClickListener   {
 
     private static final String TAG = "TabDogOfTheDayFragment";
 
@@ -52,6 +55,8 @@ public class TabDogOfTheDayFragment extends Fragment implements TabDogOfTheDayVi
 
     @BindView(R.id.add_to_favourites_button)
     ImageButton mAddToFavourites;
+
+    private DogOfTheDay mDogOfTheDay;
 
     @Override
     public void onAttach(Context context) {
@@ -71,6 +76,7 @@ public class TabDogOfTheDayFragment extends Fragment implements TabDogOfTheDayVi
         ButterKnife.bind(this, rootView);
 
         mDogOfTheDayFragmentModel = ViewModelProviders.of(this, mFactory).get(DogOfTheDayFragmentModel.class);
+        mAddToFavourites.setOnClickListener(this);
 
         return rootView;
     }
@@ -96,12 +102,11 @@ public class TabDogOfTheDayFragment extends Fragment implements TabDogOfTheDayVi
             if (response.status == Status.ERROR) {
                 Log.e(TAG, "onCreateView: error occurred", response.error);
             } else {
-                DogOfTheDay dogOfTheDay = (DogOfTheDay) response.data;
-                setFields(dogOfTheDay);
+                mDogOfTheDay = (DogOfTheDay) response.data;
+                setFields(mDogOfTheDay);
             }
         });
 
-        //TODO how to verify request sent
         if (!mDogOfTheDayFragmentModel.isRequestSent()) {
             Log.d(TAG, "onStart: loading dogs from api");
             mDogOfTheDayFragmentModel.loadOrDrawDogOfTheDay();
@@ -114,5 +119,42 @@ public class TabDogOfTheDayFragment extends Fragment implements TabDogOfTheDayVi
                 .error(R.drawable.ic_image_black_48dp)
                 .placeholder(R.drawable.ic_image_black_48dp)
                 .into(mDogImage);
+    }
+
+    @Override
+    public void onClick(View view) {
+        Log.d(TAG, "onClick: Dog of the day favourites btn clicked");
+        if (view.getId() == R.id.add_to_favourites_button) {
+            Log.d(TAG, "onClick: favourites btn clicked");
+            boolean alreadyAdded = handleFavouritesBtnClicked();
+            Log.d(TAG, "onFavouritesButtonClicked: clicked");
+
+            Breed breed = new Breed();
+            breed.setName(mDogOfTheDay.getName());
+            breed.setImageUrl(mDogOfTheDay.getImageUrl());
+            breed.setFavourite(mDogOfTheDay.isFavourite());
+
+            BreedWithSubBreeds breedWithSubBreeds = new BreedWithSubBreeds();
+            breedWithSubBreeds.setBreed(breed);
+            breedWithSubBreeds.setSubBreeds(emptyList());
+
+            if (alreadyAdded) {
+                mDogOfTheDayFragmentModel.deleteDogFromFavouritesByName(breed.getName());
+            } else {
+                mDogOfTheDayFragmentModel.persistFavouriteDog(breedWithSubBreeds);
+            }
+        }
+    }
+
+    private boolean handleFavouritesBtnClicked() {
+        if (android.R.drawable.btn_star_big_off == (Integer) mAddToFavourites.getTag()) {
+            mAddToFavourites.setImageResource(android.R.drawable.btn_star_big_on);
+            mAddToFavourites.setTag(android.R.drawable.btn_star_big_on);
+            return false;
+        } else {
+            mAddToFavourites.setImageResource(android.R.drawable.btn_star_big_off);
+            mAddToFavourites.setTag(android.R.drawable.btn_star_big_off);
+            return true;
+        }
     }
 }

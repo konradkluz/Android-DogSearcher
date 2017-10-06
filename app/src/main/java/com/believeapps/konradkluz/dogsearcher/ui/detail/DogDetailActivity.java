@@ -1,5 +1,7 @@
 package com.believeapps.konradkluz.dogsearcher.ui.detail;
 
+import android.arch.lifecycle.ViewModelProvider;
+import android.arch.lifecycle.ViewModelProviders;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -16,6 +18,8 @@ import com.believeapps.konradkluz.dogsearcher.R;
 import com.believeapps.konradkluz.dogsearcher.model.entities.Breed;
 import com.believeapps.konradkluz.dogsearcher.model.entities.BreedWithSubBreeds;
 import com.believeapps.konradkluz.dogsearcher.ui.common.fragment.dodd.TabDogOfTheDayFragment;
+import com.believeapps.konradkluz.dogsearcher.viewmodel.AllDogsFragmentViewModel;
+import com.believeapps.konradkluz.dogsearcher.viewmodel.DogDetailActivityModel;
 import com.squareup.picasso.Picasso;
 
 import java.io.Serializable;
@@ -29,9 +33,14 @@ import dagger.android.AndroidInjector;
 import dagger.android.DispatchingAndroidInjector;
 import dagger.android.support.HasSupportFragmentInjector;
 
-public class DogDetailActivity extends AppCompatActivity implements DogDetailView, HasSupportFragmentInjector, View.OnClickListener  {
+public class DogDetailActivity extends AppCompatActivity implements DogDetailView, View.OnClickListener  {
 
     private static final String TAG = "DogDetailActivity";
+
+    private DogDetailActivityModel mDogDetailActivityModel;
+
+    @Inject
+    ViewModelProvider.Factory mFactory;
 
     @BindView(R.id.dog_detail_image)
     ImageView mDogImage;
@@ -42,8 +51,7 @@ public class DogDetailActivity extends AppCompatActivity implements DogDetailVie
     @BindView(R.id.dog_detail_add_to_favourites_button)
     ImageButton mAddToFavourites;
 
-    @Inject
-    DispatchingAndroidInjector<Fragment> mFragmentDispatchingAndroidInjector;
+    private BreedWithSubBreeds mBreedWithSubBreeds;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,11 +64,13 @@ public class DogDetailActivity extends AppCompatActivity implements DogDetailVie
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
 
-        BreedWithSubBreeds breedWithSubBreeds = (BreedWithSubBreeds) getIntent().getSerializableExtra("dog");
-        Log.d(TAG, "onCreate: " + breedWithSubBreeds);
-        if (breedWithSubBreeds != null) {
+        mDogDetailActivityModel = ViewModelProviders.of(this, mFactory).get(DogDetailActivityModel.class);
+
+        mBreedWithSubBreeds = (BreedWithSubBreeds) getIntent().getSerializableExtra("dog");
+        Log.d(TAG, "onCreate: " + mBreedWithSubBreeds);
+        if (mBreedWithSubBreeds != null) {
             Log.d(TAG, "onCreateView: dog found");
-            Breed breed = breedWithSubBreeds.getBreed();
+            Breed breed = mBreedWithSubBreeds.getBreed();
             setFields(breed);
         }
         mAddToFavourites.setOnClickListener(this);
@@ -81,12 +91,6 @@ public class DogDetailActivity extends AppCompatActivity implements DogDetailVie
         loadImageFromUrl(breed.getImageUrl());
     }
 
-    @Override
-    public AndroidInjector<Fragment> supportFragmentInjector() {
-        return mFragmentDispatchingAndroidInjector;
-    }
-
-
     private void loadImageFromUrl(String imageUrl) {
         Picasso.with(this).load(imageUrl)
                 .error(R.drawable.ic_image_black_48dp)
@@ -96,9 +100,16 @@ public class DogDetailActivity extends AppCompatActivity implements DogDetailVie
 
     @Override
     public void onClick(View view) {
-        if (view.getId() == R.id.add_to_favourites_button) {
+        Log.d(TAG, "onClick: Dog detail activity favourites btn clicked");
+        if (view.getId() == R.id.dog_detail_add_to_favourites_button) {
             Log.d(TAG, "onClick: favourites btn clicked");
             boolean alreadyAdded = handleFavouritesBtnClicked();
+            Log.d(TAG, "onFavouritesButtonClicked: clicked");
+            if (alreadyAdded) {
+                mDogDetailActivityModel.deleteDogFromFavourites(mBreedWithSubBreeds);
+            } else {
+                mDogDetailActivityModel.persistFavouriteDog(mBreedWithSubBreeds);
+            }
         }
     }
 

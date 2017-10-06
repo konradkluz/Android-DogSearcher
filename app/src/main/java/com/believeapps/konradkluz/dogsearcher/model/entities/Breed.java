@@ -73,6 +73,6 @@ public class Breed implements Serializable {
 
     @Override
     public String toString() {
-        return name + ", id: " + id;
+        return name + ", id: " + id + ", is favourite: " + isFavourite;
     }
 }

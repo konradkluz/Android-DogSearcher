@@ -11,6 +11,8 @@ import com.believeapps.konradkluz.dogsearcher.model.entities.DogOfTheDay;
 import com.believeapps.konradkluz.dogsearcher.model.entities.Response;
 import com.believeapps.konradkluz.dogsearcher.model.entities.SubBreed;
 
+import java.util.Calendar;
+import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -25,6 +27,8 @@ import io.reactivex.functions.Action;
 import io.reactivex.functions.Consumer;
 import io.reactivex.internal.operators.maybe.MaybeToFlowable;
 import io.reactivex.schedulers.Schedulers;
+
+import static java.util.Arrays.asList;
 
 /**
  * Created by konradkluz on 02/10/2017.
@@ -58,14 +62,17 @@ public class DogLocalRepositoryImpl implements DogLocalRepository {
     @Override
     public Flowable<List<BreedWithSubBreeds>> getAllFavourites(
             List<BreedWithSubBreeds> breedWithSubBreeds) {
-        Flowable<List<BreedWithSubBreeds>> allFavourites = mFavouriteDogsDao.getFavouriteDogs();
 
-        Flowable<List<BreedWithSubBreeds>> listFlowable = Flowable
-                .fromCallable(() -> breedWithSubBreeds);
-
-        return Flowable
-                .zip(allFavourites, listFlowable,
-                        (favourites, apiBreeds) -> {
+        return Flowable.fromCallable(() -> breedWithSubBreeds)
+                .flatMap(breeds -> {
+                    for (BreedWithSubBreeds breed : breeds) {
+                        breed.getBreed().setId(null);
+                        breed.getBreed().setFavourite(false);
+                    }
+                    return Flowable.fromCallable(() -> breeds);
+                })
+                .zipWith(mFavouriteDogsDao.getFavouriteDogs(),
+                        (apiBreeds, favourites) -> {
                             for (BreedWithSubBreeds favourite : favourites) {
                                 if (apiBreeds.contains(favourite)) {
                                     int index = apiBreeds.indexOf(favourite);
@@ -108,6 +115,8 @@ public class DogLocalRepositoryImpl implements DogLocalRepository {
 
     @Override
     public void insertDogOfTheDay(DogOfTheDay dogOfTheDay) {
+        Long expirationDate = generateExpirationDate();
+        dogOfTheDay.setExpirationDateMillis(expirationDate);
         Single.fromCallable(() -> mFavouriteDogsDao.insert(dogOfTheDay))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -116,26 +125,57 @@ public class DogLocalRepositoryImpl implements DogLocalRepository {
                         (error) -> Log.e(TAG, "insertDogOfTheDay: error occurred while inserting dog of the day.", error));
     }
 
+    private Long generateExpirationDate() {
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.DATE, 1);
+        calendar.set(Calendar.HOUR_OF_DAY, 12);
+        calendar.set(Calendar.MINUTE, 30);
+        return calendar.getTimeInMillis();
+    }
+
+    @Override
+    public void deleteDogOfTheDay(DogOfTheDay dogOfTheDay) {
+        Single.fromCallable(() -> mFavouriteDogsDao.delete(dogOfTheDay))
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe();
+    }
+
     @Override
     public void deleteDogFromFavourites(BreedWithSubBreeds favouriteDog) {
-        Single.fromCallable(() -> mFavouriteDogsDao.delete(favouriteDog.getBreed()))
-                .flatMapMaybe(numberOfRows -> {
+        Single.fromCallable(() -> {
+            Breed breed = favouriteDog.getBreed();
+            return mFavouriteDogsDao.delete(breed);
+        })
+                .flatMap(numberOfRows -> {
                     if (favouriteDog.getSubBreeds() != null && !favouriteDog.getSubBreeds().isEmpty()) {
-                        return Maybe.fromCallable(() -> mFavouriteDogsDao.deleteAllSubBreeds(favouriteDog.getSubBreeds()));
+                        return Single.fromCallable(() -> mFavouriteDogsDao.deleteAllSubBreeds(favouriteDog.getSubBreeds()));
                     }
-                    return Maybe.empty();
+                    return Single.fromCallable(() -> numberOfRows);
                 })
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
-                        numberOfRows -> Log.d(TAG, "deleted: " + numberOfRows + "sub breeds"),
-                        error -> Log.e(TAG, "deleting sub breeds: error occurred: ", error),
-                        () -> {
-                            Log.d(TAG, "deleteDogFromFavourites: breed deleted: " + favouriteDog.getBreed());
-                            favouriteDog.getBreed().setId(null);
-                            favouriteDog.getBreed().setFavourite(false);
-                        }
+                        numberOfRows -> {
+                            Log.d(TAG, "deleted: " + numberOfRows + "sub breeds");
+                            Breed breed = favouriteDog.getBreed();
+//                            breed.setId(null);
+//                            breed.setFavourite(false);
+                        },
+                        error -> Log.e(TAG, "deleting sub breeds: error occurred: ", error)
                 );
+    }
+
+    @Override
+    public void deleteDogFromFavouritesByName(String breedName) {
+        mFavouriteDogsDao.findByBreed(breedName)
+                .doOnSuccess(breeds -> {
+                    Log.d(TAG, "deleteDogFromFavouritesByName: breed found: " + breeds);
+                    deleteDogFromFavourites(breeds);
+                })
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe();
     }
 
     @Override

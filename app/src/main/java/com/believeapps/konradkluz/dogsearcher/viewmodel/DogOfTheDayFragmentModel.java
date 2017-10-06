@@ -8,17 +8,14 @@ import android.support.annotation.NonNull;
 import android.util.Log;
 
 import com.believeapps.konradkluz.dogsearcher.model.entities.BreedWithSubBreeds;
-import com.believeapps.konradkluz.dogsearcher.model.entities.DogOfTheDay;
 import com.believeapps.konradkluz.dogsearcher.model.entities.Response;
 import com.believeapps.konradkluz.dogsearcher.model.repository.DogLocalRepository;
 import com.believeapps.konradkluz.dogsearcher.model.repository.DogRemoteRepository;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.Calendar;
 
 import javax.inject.Inject;
 
-import io.reactivex.Flowable;
 import io.reactivex.Maybe;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
@@ -56,6 +53,13 @@ public class DogOfTheDayFragmentModel extends ViewModel {
         MutableLiveData<Response> liveData = new MutableLiveData<>();
         compositeDisposable.add(
                 mDogLocalRepository.getDogOfTheDay()
+                        .flatMap(dogOfTheDay -> {
+                            if (isTimeToUpdate(dogOfTheDay.getExpirationDateMillis())) {
+                                mDogLocalRepository.deleteDogOfTheDay(dogOfTheDay);
+                                return Maybe.empty();
+                            }
+                            return Maybe.fromCallable(() -> dogOfTheDay);
+                        })
                         .switchIfEmpty(mDogRemoteRepository
                                 .loadRandomBreed()
                                 .doAfterSuccess(dogOfTheDay -> mDogLocalRepository.insertDogOfTheDay(dogOfTheDay)))
@@ -75,8 +79,28 @@ public class DogOfTheDayFragmentModel extends ViewModel {
         return mDbResponse;
     }
 
+    public void deleteDogFromFavouritesByName(String breedName) {
+        Log.d(TAG, "deleteDogFromFavourites: deleting from favourites: " + breedName);
+        mDogLocalRepository.deleteDogFromFavouritesByName(breedName);
+        Log.d(TAG, "deleteDogFromFavourites: dog deleted: " + breedName);
+    }
+
+    public void persistFavouriteDog(BreedWithSubBreeds favouriteDog) {
+        Log.d(TAG, "persistFavouriteDog: persisting favourite dog: " + favouriteDog);
+        mDogLocalRepository.insertFavouriteDog(favouriteDog);
+        Log.d(TAG, "persistFavouriteDog: dog persisted: " + favouriteDog);
+    }
+
     public boolean isRequestSent() {
         return requestSent;
+    }
+
+    private boolean isTimeToUpdate(Long expirationDate) {
+        Calendar timeOfUpdate = Calendar.getInstance();
+        timeOfUpdate.setTimeInMillis(expirationDate);
+
+        Calendar current = Calendar.getInstance();
+        return current.after(timeOfUpdate);
     }
 
     @Override

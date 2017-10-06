@@ -9,11 +9,21 @@ import android.widget.TextView;
 
 import com.believeapps.konradkluz.dogsearcher.R;
 
+import java.lang.ref.WeakReference;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class DogFavouritesViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+
+    public interface FavouritesItemClickListener{
+        void onFavouritesButtonClicked(int position, boolean alreadyAdded);
+    }
+
     private static final String TAG = "DogFavouritesViewHolder";
+
+    private WeakReference<FavouritesItemClickListener> listenerRef;
+
 
     @BindView(R.id.dog_day_image)
     ImageView mDogImage;
@@ -24,9 +34,14 @@ public class DogFavouritesViewHolder extends RecyclerView.ViewHolder implements 
     @BindView(R.id.dog_details_item_add_to_favourites_button)
     ImageButton mAddToFavourites;
 
-    public DogFavouritesViewHolder(View itemView) {
+    public DogFavouritesViewHolder(View itemView, FavouritesItemClickListener favouritesItemClickListener) {
         super(itemView);
         ButterKnife.bind(this, itemView);
+        mAddToFavourites.setOnClickListener(this);
+
+        if (favouritesItemClickListener!= null) {
+            listenerRef = new WeakReference<>(favouritesItemClickListener);
+        }
         mAddToFavourites.setOnClickListener(this);
     }
 
@@ -35,6 +50,9 @@ public class DogFavouritesViewHolder extends RecyclerView.ViewHolder implements 
         if (view.getId() == R.id.dog_details_item_add_to_favourites_button) {
             Log.d(TAG, "onClick: favourites btn clicked");
             boolean alreadyAdded = handleFavouritesBtnClicked();
+            if (listenerRef != null) {
+                listenerRef.get().onFavouritesButtonClicked(getAdapterPosition(), alreadyAdded);
+            }
         }
     }
 

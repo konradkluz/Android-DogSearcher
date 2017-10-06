@@ -15,6 +15,7 @@ import android.view.ViewGroup;
 import com.believeapps.konradkluz.dogsearcher.R;
 import com.believeapps.konradkluz.dogsearcher.model.entities.BreedWithSubBreeds;
 import com.believeapps.konradkluz.dogsearcher.model.entities.Status;
+import com.believeapps.konradkluz.dogsearcher.ui.main.fragment.favourites.adapter.DogFavouritesViewHolder;
 import com.believeapps.konradkluz.dogsearcher.ui.main.fragment.favourites.adapter.FavouritesRecyclerViewAdapter;
 import com.believeapps.konradkluz.dogsearcher.viewmodel.FavouritesViewModel;
 
@@ -31,7 +32,7 @@ import dagger.android.support.AndroidSupportInjection;
  * Created by konradkluz on 28/09/2017.
  */
 
-public class TabFavouritesFragment extends Fragment implements TabFavouritesView{
+public class TabFavouritesFragment extends Fragment implements TabFavouritesView, DogFavouritesViewHolder.FavouritesItemClickListener{
 
     private static final String TAG = "TabFavouritesFragment";
 
@@ -65,7 +66,7 @@ public class TabFavouritesFragment extends Fragment implements TabFavouritesView
         mFavouritesViewModel = ViewModelProviders.of(this, mFactory).get(FavouritesViewModel.class);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         mRecyclerView.setAdapter(mFavouritesRecyclerViewAdapter);
-
+        mFavouritesRecyclerViewAdapter.setFavouritesItemClickListener(this);
         return rootView;
     }
 
@@ -83,10 +84,20 @@ public class TabFavouritesFragment extends Fragment implements TabFavouritesView
             }
         });
 
-        //TODO how to verify request sent
         if (!mFavouritesViewModel.isRequestSent()) {
             Log.d(TAG, "onStart: loading dogs from db");
             mFavouritesViewModel.getFavouriteDogs();
+        }
+    }
+
+    @Override
+    public void onFavouritesButtonClicked(int position, boolean alreadyAdded) {
+        Log.d(TAG, "onFavouritesButtonClicked: clicked");
+        BreedWithSubBreeds breedWithSubBreeds = mFavouritesRecyclerViewAdapter.getBreed(position);
+        if (alreadyAdded) {
+            mFavouritesViewModel.deleteDogFromFavourites(breedWithSubBreeds);
+        } else {
+            mFavouritesViewModel.persistFavouriteDog(breedWithSubBreeds);
         }
     }
 }

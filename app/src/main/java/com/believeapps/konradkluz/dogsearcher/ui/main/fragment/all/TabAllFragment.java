@@ -96,7 +96,6 @@ public class TabAllFragment extends Fragment implements TabAllView,
             }
         });
 
-        //TODO how to verify request sent
         if (!mAllDogsFragmentViewModel.isRequestSent()) {
             Log.d(TAG, "onStart: loading dogs from api");
             mAllDogsFragmentViewModel.loadDogs();

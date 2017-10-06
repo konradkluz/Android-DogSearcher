@@ -22,7 +22,4 @@ public abstract class FragmentBuilder {
     @FragmentKey(TabDogOfTheDayFragment.class)
     abstract AndroidInjector.Factory<? extends Fragment> bindTabDogOfTheDayFragment(TabDogOfTheDayFragmentComponent.Builder builder);
 
-//    @ContributesAndroidInjector(modules = TabDogOfTheDayFragmentModule.class)
-//    abstract TabDogOfTheDayFragment bindTabDogOfTheDayFragment();
-
 }

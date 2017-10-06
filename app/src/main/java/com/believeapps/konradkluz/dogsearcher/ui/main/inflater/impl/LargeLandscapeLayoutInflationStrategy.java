@@ -76,7 +76,6 @@ public class LargeLandscapeLayoutInflationStrategy implements LayoutInflationStr
 
     private void initializeLandscapeTabBar() {
         Log.d(TAG, "initializeLandscapeTabBar: initializing landscape side tab bar");
-//        mLandscapeTabView = mActivity.findViewById(R.id.landscape_tab_view);
         ArrayAdapter<String> stringArrayAdapter =
                 new ArrayAdapter<>(
                         mActivity,

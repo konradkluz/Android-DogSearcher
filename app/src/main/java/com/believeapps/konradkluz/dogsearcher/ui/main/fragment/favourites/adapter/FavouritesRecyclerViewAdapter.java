@@ -52,7 +52,7 @@ public class FavouritesRecyclerViewAdapter extends RecyclerView.Adapter<DogFavou
     private void fillViewHolder(DogFavouritesViewHolder holder, Breed breed) {
         holder.mDogImage.setImageResource(R.drawable.ic_image_black_48dp);
         holder.mBreedName.setText(breed.getName());
-        if (breed.getId() != null) {
+        if (breed.isFavourite()) {
             holder.mAddToFavourites.setTag(android.R.drawable.btn_star_big_on);
             holder.mAddToFavourites.setImageResource(android.R.drawable.btn_star_big_on);
         } else {

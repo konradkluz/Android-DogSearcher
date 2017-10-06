@@ -30,4 +30,8 @@ public class Response<T> {
     public static <T> Response<T> error(Throwable error) {
         return new Response<>(Status.ERROR, null, error);
     }
+
+    public static <T> Response<T> empty() {
+        return new Response<>(Status.EMPTY, null, null);
+    }
 }

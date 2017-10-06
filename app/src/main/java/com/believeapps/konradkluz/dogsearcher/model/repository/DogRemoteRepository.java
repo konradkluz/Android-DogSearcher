@@ -2,8 +2,12 @@ package com.believeapps.konradkluz.dogsearcher.model.repository;
 
 import android.arch.lifecycle.LiveData;
 
+import com.believeapps.konradkluz.dogsearcher.model.entities.DogOfTheDay;
 import com.believeapps.konradkluz.dogsearcher.model.entities.Response;
 
+import io.reactivex.Flowable;
+import io.reactivex.Maybe;
+import io.reactivex.Single;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
 
@@ -14,7 +18,8 @@ import io.reactivex.functions.Consumer;
 public interface DogRemoteRepository {
     LiveData<Response> getAllDogs();
 
-    Disposable loadImageUrlByBreedName(String breedName,
-                                       Consumer<String> onNext,
-                                       Consumer<Throwable> onError);
+    Single<String> loadImageUrlByBreedName(String breedName);
+
+    Maybe<DogOfTheDay> loadRandomBreed();
+
 }

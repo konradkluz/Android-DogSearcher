@@ -62,25 +62,27 @@ public class AllDogsFragmentViewModel extends ViewModel {
     public void persistFavouriteDog(BreedWithSubBreeds favouriteDog) {
         Log.d(TAG, "persistFavouriteDog: persisting favourite dog: " + favouriteDog);
 
-        compositeDisposable.add(mDogLocalRepository.insertFavouriteDog(favouriteDog));
+        mDogLocalRepository.insertFavouriteDog(favouriteDog);
     }
 
     public void deleteDogFromFavourites(BreedWithSubBreeds favouriteDog) {
         Log.d(TAG, "deleteDogFromFavourites: deleting from favourites: " + favouriteDog);
-        compositeDisposable.add(mDogLocalRepository.deleteDogFromFavourites(favouriteDog));
+        mDogLocalRepository.deleteDogFromFavourites(favouriteDog);
     }
 
     public void updateDogsFromApiWithFavourites(List<BreedWithSubBreeds> breedWithSubBreeds,
                                                 Consumer<List<BreedWithSubBreeds>> onNext,
                                                 Consumer<Throwable> onError) {
         Log.d(TAG, "updateDogsFromApiWithFavourites: updating dogs");
-        compositeDisposable.add(mDogLocalRepository.getAllFavourites(breedWithSubBreeds, onNext, onError));
+        compositeDisposable.add(mDogLocalRepository.getAllFavourites(breedWithSubBreeds).subscribe(onNext, onError));
     }
 
     public void loadImageUrlByBreedName(String breedName,
                                         Consumer<String> onNext,
                                         Consumer<Throwable> onError) {
-        compositeDisposable.add(mDogRemoteRepository.loadImageUrlByBreedName(breedName, onNext, onError));
+        compositeDisposable.add(mDogRemoteRepository.loadImageUrlByBreedName(breedName)
+                .subscribe(onNext, onError)
+        );
     }
 
     @Override

@@ -5,5 +5,6 @@ package com.believeapps.konradkluz.dogsearcher.model.entities;
  */
 public enum Status {
     SUCCESS,
-    ERROR
+    ERROR,
+    EMPTY
 }

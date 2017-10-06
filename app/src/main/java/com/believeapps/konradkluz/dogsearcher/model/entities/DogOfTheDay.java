@@ -4,13 +4,11 @@ import android.arch.persistence.room.ColumnInfo;
 import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.PrimaryKey;
 
-import java.io.Serializable;
-
 /**
- * Created by konradkluz on 03/10/2017.
+ * Created by konradkluz on 05/10/2017.
  */
-@Entity(tableName = "breed_favourite")
-public class Breed implements Serializable {
+@Entity(tableName = "dog_of_the_day")
+public class DogOfTheDay {
 
     @PrimaryKey(autoGenerate = true)
     private Long id;
@@ -61,14 +59,17 @@ public class Breed implements Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        Breed breed = (Breed) o;
+        DogOfTheDay that = (DogOfTheDay) o;
 
-        return name != null ? name.equals(breed.name) : breed.name == null;
+        if (id != null ? !id.equals(that.id) : that.id != null) return false;
+        return name != null ? name.equals(that.name) : that.name == null;
     }
 
     @Override
     public int hashCode() {
-        return name != null ? name.hashCode() : 0;
+        int result = id != null ? id.hashCode() : 0;
+        result = 31 * result + (name != null ? name.hashCode() : 0);
+        return result;
     }
 
     @Override

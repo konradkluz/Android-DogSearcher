@@ -73,7 +73,7 @@ public class AllDogsRecyclerViewAdapter extends RecyclerView.Adapter<DogViewHold
         holder.breedName.setText(breed.getName());
         holder.subBreeds.setText(subBreeds.toString());
         holder.addToFavourites.setVisibility(View.VISIBLE);
-        if (breed.getId() != null) {
+        if (breed.isFavourite()) {
             holder.addToFavourites.setTag(android.R.drawable.btn_star_big_on);
             holder.addToFavourites.setImageResource(android.R.drawable.btn_star_big_on);
         } else {

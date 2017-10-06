@@ -5,15 +5,23 @@ import android.arch.lifecycle.MutableLiveData;
 import android.util.Log;
 
 import com.believeapps.konradkluz.dogsearcher.model.api.DogApiService;
+import com.believeapps.konradkluz.dogsearcher.model.entities.DogOfTheDay;
 import com.believeapps.konradkluz.dogsearcher.model.entities.Response;
 
 import org.json.JSONObject;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import javax.inject.Inject;
 
+import io.reactivex.Flowable;
+import io.reactivex.Maybe;
+import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
+import io.reactivex.internal.operators.maybe.MaybeToFlowable;
 import io.reactivex.schedulers.Schedulers;
 
 /**
@@ -47,16 +55,43 @@ public class DogRemoteRepositoryImpl implements DogRemoteRepository {
     }
 
     @Override
-    public Disposable loadImageUrlByBreedName(String breedName,
-                                              Consumer<String> onNext,
-                                              Consumer<Throwable> onError) {
+    public Single<String> loadImageUrlByBreedName(String breedName) {
         return mDogApiService.getImageUrlByBreedName(breedName)
                 .map(responseBody -> {
                     JSONObject jsonObject = new JSONObject(responseBody.string());
                     return jsonObject.getString("message");
                 })
                 .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(onNext, onError);
+                .observeOn(AndroidSchedulers.mainThread());
+    }
+
+    @Override
+    public Maybe<DogOfTheDay> loadRandomBreed() {
+        Log.d(TAG, "loadRandomBreed: try to load random breed from remote repository");
+        return mDogApiService.getRandomBreed()
+                .map(responseBody -> {
+                    JSONObject jsonObject = new JSONObject(responseBody.string());
+                    String message = jsonObject.getString("message");
+                    Log.d(TAG, "loadRandomBreed: received random breed with url: " + message);
+                    return message;
+                }).flatMap(dogOfTheDayUrl -> {
+                    Log.d(TAG, "loadOrDrawDogOfTheDay: url from remote repo received: " + dogOfTheDayUrl);
+
+                    return Maybe.fromCallable(() -> createDogOfTheDay(dogOfTheDayUrl));
+                });
+    }
+
+    private DogOfTheDay createDogOfTheDay(String message) {
+        Log.d(TAG, "createDogOfTheDay: creating dog from url: " + message);
+        Pattern pattern = Pattern.compile("(?<=img\\/).*?(?=\\s*\\/)");
+        Matcher matcher = pattern.matcher(message);
+        DogOfTheDay dogOfTheDay = new DogOfTheDay();
+        if (matcher.find()) {
+            String breedName = matcher.group(0);
+            String[] split = breedName.split("-");
+            dogOfTheDay.setName(split[0]);
+            dogOfTheDay.setImageUrl(message);
+        }
+        return dogOfTheDay;
     }
 }

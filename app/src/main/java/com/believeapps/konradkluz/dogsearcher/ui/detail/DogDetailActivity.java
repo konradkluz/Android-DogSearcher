@@ -6,19 +6,41 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
+import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.believeapps.konradkluz.dogsearcher.R;
+import com.believeapps.konradkluz.dogsearcher.model.entities.Breed;
+import com.believeapps.konradkluz.dogsearcher.model.entities.BreedWithSubBreeds;
 import com.believeapps.konradkluz.dogsearcher.ui.common.fragment.dodd.TabDogOfTheDayFragment;
+import com.squareup.picasso.Picasso;
+
+import java.io.Serializable;
 
 import javax.inject.Inject;
 
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import dagger.android.AndroidInjection;
 import dagger.android.AndroidInjector;
 import dagger.android.DispatchingAndroidInjector;
 import dagger.android.support.HasSupportFragmentInjector;
 
-public class DogDetailActivity extends AppCompatActivity implements DogDetailView, HasSupportFragmentInjector {
+public class DogDetailActivity extends AppCompatActivity implements DogDetailView, HasSupportFragmentInjector, View.OnClickListener  {
+
+    private static final String TAG = "DogDetailActivity";
+
+    @BindView(R.id.dog_detail_image)
+    ImageView mDogImage;
+
+    @BindView(R.id.dog_detail_name)
+    TextView mDogName;
+
+    @BindView(R.id.dog_detail_add_to_favourites_button)
+    ImageButton mAddToFavourites;
 
     @Inject
     DispatchingAndroidInjector<Fragment> mFragmentDispatchingAndroidInjector;
@@ -34,17 +56,61 @@ public class DogDetailActivity extends AppCompatActivity implements DogDetailVie
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
 
-        TabDogOfTheDayFragment fragment = new TabDogOfTheDayFragment();
-        Bundle arguments = getIntent().getExtras();
-        fragment.setArguments(arguments);
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.replace(R.id.dog_detail, fragment);
-        fragmentTransaction.commit();
+        BreedWithSubBreeds breedWithSubBreeds = (BreedWithSubBreeds) getIntent().getSerializableExtra("dog");
+        Log.d(TAG, "onCreate: " + breedWithSubBreeds);
+        if (breedWithSubBreeds != null) {
+            Log.d(TAG, "onCreateView: dog found");
+            Breed breed = breedWithSubBreeds.getBreed();
+            setFields(breed);
+        }
+        mAddToFavourites.setOnClickListener(this);
+
+    }
+
+
+    private void setFields(Breed breed) {
+        mDogName.setText(breed.getName());
+        if (breed.isFavourite()) {
+            mAddToFavourites.setTag(android.R.drawable.btn_star_big_on);
+            mAddToFavourites.setImageResource(android.R.drawable.btn_star_big_on);
+        } else {
+            mAddToFavourites.setTag(android.R.drawable.btn_star_big_off);
+            mAddToFavourites.setImageResource(android.R.drawable.btn_star_big_off);
+        }
+
+        loadImageFromUrl(breed.getImageUrl());
     }
 
     @Override
     public AndroidInjector<Fragment> supportFragmentInjector() {
         return mFragmentDispatchingAndroidInjector;
+    }
+
+
+    private void loadImageFromUrl(String imageUrl) {
+        Picasso.with(this).load(imageUrl)
+                .error(R.drawable.ic_image_black_48dp)
+                .placeholder(R.drawable.ic_image_black_48dp)
+                .into(mDogImage);
+    }
+
+    @Override
+    public void onClick(View view) {
+        if (view.getId() == R.id.add_to_favourites_button) {
+            Log.d(TAG, "onClick: favourites btn clicked");
+            boolean alreadyAdded = handleFavouritesBtnClicked();
+        }
+    }
+
+    private boolean handleFavouritesBtnClicked() {
+        if (android.R.drawable.btn_star_big_off == (Integer) mAddToFavourites.getTag()) {
+            mAddToFavourites.setImageResource(android.R.drawable.btn_star_big_on);
+            mAddToFavourites.setTag(android.R.drawable.btn_star_big_on);
+            return false;
+        } else {
+            mAddToFavourites.setImageResource(android.R.drawable.btn_star_big_off);
+            mAddToFavourites.setTag(android.R.drawable.btn_star_big_off);
+            return true;
+        }
     }
 }

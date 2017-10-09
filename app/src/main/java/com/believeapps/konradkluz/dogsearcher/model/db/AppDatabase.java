@@ -11,7 +11,7 @@ import com.believeapps.konradkluz.dogsearcher.model.entities.SubBreed;
 /**
  * Created by konradkluz on 02/10/2017.
  */
-@Database(entities = {Breed.class, SubBreed.class, DogOfTheDay.class}, version = 2)
+@Database(entities = {Breed.class, SubBreed.class, DogOfTheDay.class}, version = 1)
 public abstract class AppDatabase extends RoomDatabase {
 
     public abstract FavouriteDogsDao favouriteDogsDao();

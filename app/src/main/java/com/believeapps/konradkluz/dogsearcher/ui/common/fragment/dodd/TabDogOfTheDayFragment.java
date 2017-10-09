@@ -47,6 +47,10 @@ public class TabDogOfTheDayFragment extends Fragment implements TabDogOfTheDayVi
 
     private DogOfTheDayFragmentModel mDogOfTheDayFragmentModel;
 
+    private DogOfTheDay mDogOfTheDay;
+
+    private DogOfTheDayChangedListener mDogOfTheDayChangedListener;
+
     @Inject
     ViewModelProvider.Factory mFactory;
 
@@ -58,8 +62,6 @@ public class TabDogOfTheDayFragment extends Fragment implements TabDogOfTheDayVi
 
     @BindView(R.id.add_to_favourites_button)
     ImageButton mAddToFavourites;
-
-    private DogOfTheDay mDogOfTheDay;
 
     @Override
     public void onAttach(Context context) {
@@ -78,6 +80,7 @@ public class TabDogOfTheDayFragment extends Fragment implements TabDogOfTheDayVi
         View rootView = inflater.inflate(R.layout.fragment_tab_dog_of_the_day, container, false);
         ButterKnife.bind(this, rootView);
 
+        mDogOfTheDayChangedListener = (DogOfTheDayChangedListener) getActivity();
         mDogOfTheDayFragmentModel = ViewModelProviders.of(this, mFactory).get(DogOfTheDayFragmentModel.class);
         mAddToFavourites.setOnClickListener(this);
 
@@ -115,6 +118,10 @@ public class TabDogOfTheDayFragment extends Fragment implements TabDogOfTheDayVi
             mDogOfTheDayFragmentModel.loadOrDrawDogOfTheDay();
         }
 
+        if (mDogOfTheDayFragmentModel.isNewDogOfTheDayLoaded()) {
+            mDogOfTheDayChangedListener.dogOfTheDayChanged(mDogOfTheDay);
+            mDogOfTheDayFragmentModel.setNewDogOfTheDayLoaded(false);
+        }
     }
 
     private void loadImageFromUrl(String imageUrl) {

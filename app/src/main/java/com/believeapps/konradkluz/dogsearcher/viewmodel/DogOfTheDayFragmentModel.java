@@ -33,6 +33,7 @@ public class DogOfTheDayFragmentModel extends ViewModel {
     private DogLocalRepository mDogLocalRepository;
     private DogRemoteRepository mDogRemoteRepository;
     private boolean requestSent = false;
+    private boolean newDogOfTheDayLoaded = false;
 
     @Inject
     public DogOfTheDayFragmentModel(DogLocalRepository dogLocalRepository,
@@ -62,7 +63,10 @@ public class DogOfTheDayFragmentModel extends ViewModel {
                         })
                         .switchIfEmpty(mDogRemoteRepository
                                 .loadRandomBreed()
-                                .doAfterSuccess(dogOfTheDay -> mDogLocalRepository.insertDogOfTheDay(dogOfTheDay)))
+                                .doAfterSuccess(dogOfTheDay -> {
+                                    mDogLocalRepository.insertDogOfTheDay(dogOfTheDay);
+                                    newDogOfTheDayLoaded = true;
+                                }))
                         .flatMap(dogOfTheDay -> {
                             Log.d(TAG, "loadOrDrawDogOfTheDay: find favourites by name");
                             return mDogLocalRepository.findFavouriteByName(dogOfTheDay.getName())
@@ -93,6 +97,14 @@ public class DogOfTheDayFragmentModel extends ViewModel {
 
     public boolean isRequestSent() {
         return requestSent;
+    }
+
+    public boolean isNewDogOfTheDayLoaded() {
+        return newDogOfTheDayLoaded;
+    }
+
+    public void setNewDogOfTheDayLoaded(boolean newDogOfTheDayLoaded) {
+        this.newDogOfTheDayLoaded = newDogOfTheDayLoaded;
     }
 
     private boolean isTimeToUpdate(Long expirationDate) {

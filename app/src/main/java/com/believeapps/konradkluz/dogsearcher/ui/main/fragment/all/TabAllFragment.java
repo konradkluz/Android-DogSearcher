@@ -170,6 +170,7 @@ public class TabAllFragment extends Fragment implements TabAllView,
             Log.d(TAG, "onStart: loading dogs from api");
             mAllDogsFragmentViewModel.loadDogs();
         }
+
     }
 
     @Override

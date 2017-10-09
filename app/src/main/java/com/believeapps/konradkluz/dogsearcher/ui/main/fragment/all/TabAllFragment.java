@@ -7,6 +7,7 @@ import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
@@ -19,6 +20,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.SearchView;
+import android.widget.Toast;
 
 import com.believeapps.konradkluz.dogsearcher.R;
 import com.believeapps.konradkluz.dogsearcher.model.entities.BreedWithSubBreeds;
@@ -98,16 +100,11 @@ public class TabAllFragment extends Fragment implements TabAllView,
         RxSearch.fromSearchView(mSearchView)
                 .debounce(300, TimeUnit.MILLISECONDS)
                 .switchMap(query -> {
-                        return Flowable.fromCallable(() -> mBreedWithSubBreeds)
-                                .flatMap(breeds -> {
-                                    List<BreedWithSubBreeds> filtered = new ArrayList<>();
-                                    for (BreedWithSubBreeds breed : breeds) {
-                                        if (breed.getBreed().getName().startsWith(query)) {
-                                            filtered.add(breed);
-                                        }
-                                    }
-                                    return Flowable.fromCallable(() -> filtered);
-                                });
+                    return Flowable.fromCallable(() -> mBreedWithSubBreeds)
+                            .flatMap(breeds -> {
+                                List<BreedWithSubBreeds> filtered = filter(query, breeds);
+                                return Flowable.fromCallable(() -> filtered);
+                            });
                 })
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -116,6 +113,17 @@ public class TabAllFragment extends Fragment implements TabAllView,
                     mAllDogsRecyclerViewAdapter.swapSource(query);
                 });
 
+    }
+
+    @NonNull
+    private List<BreedWithSubBreeds> filter(String query, List<BreedWithSubBreeds> breeds) {
+        List<BreedWithSubBreeds> filtered = new ArrayList<>();
+        for (BreedWithSubBreeds breed : breeds) {
+            if (breed.getBreed().getName().startsWith(query)) {
+                filtered.add(breed);
+            }
+        }
+        return filtered;
     }
 
     @Override
@@ -151,6 +159,7 @@ public class TabAllFragment extends Fragment implements TabAllView,
         mAllDogsFragmentViewModel.getApiResponse().observe(this, response -> {
             if (response.status == Status.ERROR) {
                 mAllDogsRecyclerViewAdapter.swapSource(new ArrayList<>());
+                mBreedWithSubBreeds = new ArrayList<>();
                 Log.e(TAG, "onCreateView: error occurred", response.error);
             } else {
                 List<BreedWithSubBreeds> breedWithSubBreeds = (List<BreedWithSubBreeds>) response.data;
@@ -159,7 +168,12 @@ public class TabAllFragment extends Fragment implements TabAllView,
                         updatedBreeds -> {
                             Log.d(TAG, "onCreateView: updated breeds: " + updatedBreeds);
                             mBreedWithSubBreeds = updatedBreeds;
-                            mAllDogsRecyclerViewAdapter.swapSource(updatedBreeds);
+                            String query = mSearchView.getQuery().toString();
+                            if (query != null && !query.isEmpty()) {
+                                mAllDogsRecyclerViewAdapter.swapSource(filter(query, mBreedWithSubBreeds));
+                            } else {
+                                mAllDogsRecyclerViewAdapter.swapSource(updatedBreeds);
+                            }
                         },
                         error -> Log.e(TAG, "onCreateView: error occurred: ", error));
                 Log.d(TAG, "onCreateView: response succeed: " + response.data);
@@ -194,8 +208,14 @@ public class TabAllFragment extends Fragment implements TabAllView,
         BreedWithSubBreeds breedWithSubBreeds = mAllDogsRecyclerViewAdapter.getBreed(position);
         if (alreadyAdded) {
             mAllDogsFragmentViewModel.deleteDogFromFavourites(breedWithSubBreeds);
+            Toast.makeText(getActivity(),
+                    getString(R.string.favourite_removed, breedWithSubBreeds.getBreed().getName())
+                    , Toast.LENGTH_LONG).show();
         } else {
             mAllDogsFragmentViewModel.persistFavouriteDog(breedWithSubBreeds);
+            Toast.makeText(getActivity(),
+                    getString(R.string.favourite_added, breedWithSubBreeds.getBreed().getName())
+                    , Toast.LENGTH_LONG).show();
         }
     }
 }

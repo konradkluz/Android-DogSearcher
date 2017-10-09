@@ -13,6 +13,7 @@ import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.believeapps.konradkluz.dogsearcher.R;
 import com.believeapps.konradkluz.dogsearcher.model.entities.Breed;
@@ -107,8 +108,14 @@ public class DogDetailActivity extends AppCompatActivity implements DogDetailVie
             Log.d(TAG, "onFavouritesButtonClicked: clicked");
             if (alreadyAdded) {
                 mDogDetailActivityModel.deleteDogFromFavourites(mBreedWithSubBreeds);
+                Toast.makeText(this,
+                        getString(R.string.favourite_removed, mBreedWithSubBreeds.getBreed().getName())
+                        , Toast.LENGTH_LONG).show();
             } else {
                 mDogDetailActivityModel.persistFavouriteDog(mBreedWithSubBreeds);
+                Toast.makeText(this,
+                        getString(R.string.favourite_added, mBreedWithSubBreeds.getBreed().getName())
+                        , Toast.LENGTH_LONG).show();
             }
         }
     }

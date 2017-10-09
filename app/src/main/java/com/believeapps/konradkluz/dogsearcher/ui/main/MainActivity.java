@@ -75,4 +75,9 @@ public class MainActivity extends AppCompatActivity implements MainView, HasSupp
     public AndroidInjector<Fragment> supportFragmentInjector() {
         return mFragmentDispatchingAndroidInjector;
     }
+
+    @Override
+    public DogOfTheDayChangedListener getDogOfTheDayChangedListener() {
+        return mLayoutInflationStrategy;
+    }
 }

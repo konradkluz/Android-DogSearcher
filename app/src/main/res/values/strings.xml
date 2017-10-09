@@ -15,4 +15,6 @@
     <string name="action_search">Search</string>
     <string name="enter_breed_name">Enter breed name</string>
     <string name="title_search">Search breed</string>
+    <string name="favourite_removed">Breed %1$s removed from favourites.</string>
+    <string name="favourite_added">%1$s added to favourites.</string>
 </resources>

@@ -15,12 +15,14 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.believeapps.konradkluz.dogsearcher.R;
 import com.believeapps.konradkluz.dogsearcher.model.entities.Breed;
 import com.believeapps.konradkluz.dogsearcher.model.entities.BreedWithSubBreeds;
 import com.believeapps.konradkluz.dogsearcher.model.entities.DogOfTheDay;
 import com.believeapps.konradkluz.dogsearcher.model.entities.Status;
+import com.believeapps.konradkluz.dogsearcher.ui.main.MainView;
 import com.believeapps.konradkluz.dogsearcher.viewmodel.AllDogsFragmentViewModel;
 import com.believeapps.konradkluz.dogsearcher.viewmodel.DogOfTheDayFragmentModel;
 import com.squareup.picasso.Picasso;
@@ -80,7 +82,7 @@ public class TabDogOfTheDayFragment extends Fragment implements TabDogOfTheDayVi
         View rootView = inflater.inflate(R.layout.fragment_tab_dog_of_the_day, container, false);
         ButterKnife.bind(this, rootView);
 
-        mDogOfTheDayChangedListener = (DogOfTheDayChangedListener) getActivity();
+        mDogOfTheDayChangedListener = ((MainView) getActivity()).getDogOfTheDayChangedListener();
         mDogOfTheDayFragmentModel = ViewModelProviders.of(this, mFactory).get(DogOfTheDayFragmentModel.class);
         mAddToFavourites.setOnClickListener(this);
 
@@ -150,8 +152,14 @@ public class TabDogOfTheDayFragment extends Fragment implements TabDogOfTheDayVi
 
             if (alreadyAdded) {
                 mDogOfTheDayFragmentModel.deleteDogFromFavouritesByName(breed.getName());
+                Toast.makeText(getActivity(),
+                        getString(R.string.favourite_removed, breedWithSubBreeds.getBreed().getName())
+                        , Toast.LENGTH_LONG).show();
             } else {
                 mDogOfTheDayFragmentModel.persistFavouriteDog(breedWithSubBreeds);
+                Toast.makeText(getActivity(),
+                        getString(R.string.favourite_added, breedWithSubBreeds.getBreed().getName())
+                        , Toast.LENGTH_LONG).show();
             }
         }
     }

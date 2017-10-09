@@ -49,12 +49,6 @@ public class FavouritesViewModel extends ViewModel {
         return mDbResponse;
     }
 
-    public void persistFavouriteDog(BreedWithSubBreeds favouriteDog) {
-        Log.d(TAG, "persistFavouriteDog: persisting favourite dog: " + favouriteDog);
-        mDogLocalRepository.insertFavouriteDog(favouriteDog);
-        Log.d(TAG, "persistFavouriteDog: dog persisted: " + favouriteDog);
-    }
-
     //TODO id deleted dog is dog of the day it does not change dog_of_the_day_table
     public void deleteDogFromFavourites(BreedWithSubBreeds favouriteDog) {
         Log.d(TAG, "deleteDogFromFavourites: deleting from favourites: " + favouriteDog);

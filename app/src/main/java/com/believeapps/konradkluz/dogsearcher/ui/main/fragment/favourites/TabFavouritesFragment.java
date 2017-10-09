@@ -12,6 +12,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.believeapps.konradkluz.dogsearcher.R;
 import com.believeapps.konradkluz.dogsearcher.model.entities.BreedWithSubBreeds;
@@ -33,7 +34,7 @@ import dagger.android.support.AndroidSupportInjection;
  * Created by konradkluz on 28/09/2017.
  */
 
-public class TabFavouritesFragment extends Fragment implements TabFavouritesView, DogFavouritesViewHolder.FavouritesItemClickListener{
+public class TabFavouritesFragment extends Fragment implements TabFavouritesView, DogFavouritesViewHolder.FavouritesItemClickListener {
 
     private static final String TAG = "TabFavouritesFragment";
 
@@ -97,8 +98,9 @@ public class TabFavouritesFragment extends Fragment implements TabFavouritesView
         BreedWithSubBreeds breedWithSubBreeds = mFavouritesRecyclerViewAdapter.getBreed(position);
         if (alreadyAdded) {
             mFavouritesViewModel.deleteDogFromFavourites(breedWithSubBreeds);
-        } else {
-            mFavouritesViewModel.persistFavouriteDog(breedWithSubBreeds);
+            Toast.makeText(getActivity(),
+                    getString(R.string.favourite_removed, breedWithSubBreeds.getBreed().getName())
+                    , Toast.LENGTH_LONG).show();
         }
     }
 }

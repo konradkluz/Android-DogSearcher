@@ -2,6 +2,7 @@ package com.believeapps.konradkluz.dogsearcher.ui.main.fragment.all.adapter;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,6 +20,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
+
+import io.reactivex.Completable;
+import io.reactivex.Maybe;
+import io.reactivex.Single;
 
 /**
  * Created by konradkluz on 28/09/2017.
@@ -71,7 +76,8 @@ public class AllDogsRecyclerViewAdapter extends RecyclerView.Adapter<DogViewHold
         Log.d(TAG, "onBindViewHolder: dog list has elements");
         holder.dogThumbnail.setImageResource(R.drawable.ic_image_black_48dp);
         holder.breedName.setText(breed.getName());
-        holder.subBreeds.setText(subBreeds.toString());
+
+        holder.subBreeds.setText(TextUtils.join(",", subBreeds));
         holder.addToFavourites.setVisibility(View.VISIBLE);
         if (breed.isFavourite()) {
             holder.addToFavourites.setTag(android.R.drawable.btn_star_big_on);

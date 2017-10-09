@@ -1,5 +1,7 @@
 package com.believeapps.konradkluz.dogsearcher.ui.main.inflater.impl;
 
+import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -7,14 +9,12 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 
 import com.believeapps.konradkluz.dogsearcher.R;
+import com.believeapps.konradkluz.dogsearcher.model.entities.DogOfTheDay;
 import com.believeapps.konradkluz.dogsearcher.ui.common.fragment.dodd.TabDogOfTheDayFragment;
 import com.believeapps.konradkluz.dogsearcher.ui.main.MainActivity;
 import com.believeapps.konradkluz.dogsearcher.ui.main.fragment.all.TabAllFragment;
 import com.believeapps.konradkluz.dogsearcher.ui.main.fragment.favourites.TabFavouritesFragment;
 import com.believeapps.konradkluz.dogsearcher.ui.main.inflater.LayoutInflationStrategy;
-
-import javax.inject.Inject;
-import javax.inject.Qualifier;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -32,6 +32,9 @@ public class PortraitLayoutInflationStrategy implements LayoutInflationStrategy{
 
     @BindView(R.id.tabs)
     TabLayout mTabLayout;
+
+    @BindView(R.id.portrait_main_content)
+    CoordinatorLayout coordinatorLayout;
 
     private SectionsPagerAdapter mSectionsPagerAdapter;
     private TabAllFragment mTabAllFragment;
@@ -53,6 +56,13 @@ public class PortraitLayoutInflationStrategy implements LayoutInflationStrategy{
         mViewPager.setAdapter(mSectionsPagerAdapter);
         mViewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(mTabLayout));
         mTabLayout.addOnTabSelectedListener(new TabLayout.ViewPagerOnTabSelectedListener(mViewPager));
+    }
+
+    @Override
+    public void dogOfTheDayChanged(DogOfTheDay dogOfTheDay) {
+        Snackbar snackbar = Snackbar
+                .make(coordinatorLayout, "New Dog of the day loaded.", Snackbar.LENGTH_LONG);
+        snackbar.show();
     }
 
     public class SectionsPagerAdapter extends FragmentPagerAdapter {

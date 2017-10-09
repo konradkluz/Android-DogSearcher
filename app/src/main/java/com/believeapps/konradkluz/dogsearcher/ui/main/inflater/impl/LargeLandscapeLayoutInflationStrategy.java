@@ -1,15 +1,17 @@
 package com.believeapps.konradkluz.dogsearcher.ui.main.inflater.impl;
 
+import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import com.believeapps.konradkluz.dogsearcher.R;
+import com.believeapps.konradkluz.dogsearcher.model.entities.DogOfTheDay;
 import com.believeapps.konradkluz.dogsearcher.ui.common.fragment.dodd.TabDogOfTheDayFragment;
 import com.believeapps.konradkluz.dogsearcher.ui.main.MainActivity;
 import com.believeapps.konradkluz.dogsearcher.ui.main.fragment.all.TabAllFragment;
@@ -36,6 +38,9 @@ public class LargeLandscapeLayoutInflationStrategy implements LayoutInflationStr
 
     @BindView(R.id.landscape_tab_view)
     ListView mLandscapeTabView;
+
+    @BindView(R.id.landscape_main_content)
+    CoordinatorLayout coordinatorLayout;
 
     public LargeLandscapeLayoutInflationStrategy(MainActivity activity, TabAllFragment tabAllFragment, TabFavouritesFragment tabFavouritesFragment, TabDogOfTheDayFragment tabDogOfTheDayFragment) {
         mTabAllFragment = tabAllFragment;
@@ -88,5 +93,12 @@ public class LargeLandscapeLayoutInflationStrategy implements LayoutInflationStr
     void onListItemClicked(AdapterView<?> parent, int position) {
         Log.d(TAG, "onListItemClicked: clicked: " + position);
         initializeLandscapeContent(position);
+    }
+
+    @Override
+    public void dogOfTheDayChanged(DogOfTheDay dogOfTheDay) {
+        Snackbar snackbar = Snackbar
+                .make(coordinatorLayout, "New Dog of the day loaded.", Snackbar.LENGTH_LONG);
+        snackbar.show();
     }
 }

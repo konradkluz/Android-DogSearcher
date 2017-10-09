@@ -31,7 +31,7 @@ import dagger.android.support.HasSupportFragmentInjector;
 //TODO Bugs (TODOs)
 //TODO Scheduled Job and notification
 //TODO Remove favourite dialog
-public class MainActivity extends AppCompatActivity implements MainView, DogOfTheDayChangedListener, HasSupportFragmentInjector {
+public class MainActivity extends AppCompatActivity implements MainView, HasSupportFragmentInjector {
 
     private static final String TAG = "MainActivity";
 
@@ -48,9 +48,6 @@ public class MainActivity extends AppCompatActivity implements MainView, DogOfTh
 
     @Inject
     TabDogOfTheDayFragment mTabDogOfTheDayFragment;
-
-    @BindView(R.id.main_content)
-    CoordinatorLayout coordinatorLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,12 +74,5 @@ public class MainActivity extends AppCompatActivity implements MainView, DogOfTh
     @Override
     public AndroidInjector<Fragment> supportFragmentInjector() {
         return mFragmentDispatchingAndroidInjector;
-    }
-
-    @Override
-    public void dogOfTheDayChanged(DogOfTheDay dogOfTheDay) {
-        Snackbar snackbar = Snackbar
-                .make(coordinatorLayout, "New Dog of the day loaded.", Snackbar.LENGTH_LONG);
-        snackbar.show();
     }
 }

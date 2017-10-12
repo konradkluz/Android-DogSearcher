@@ -6,6 +6,8 @@ import com.believeapps.konradkluz.dogsearcher.ui.main.MainActivity;
 import com.believeapps.konradkluz.dogsearcher.ui.main.fragment.favourites.adapter.DogFavouritesViewHolder;
 import com.believeapps.konradkluz.dogsearcher.ui.main.fragment.favourites.adapter.FavouritesRecyclerViewAdapter;
 
+import javax.inject.Singleton;
+
 import dagger.Module;
 import dagger.Provides;
 

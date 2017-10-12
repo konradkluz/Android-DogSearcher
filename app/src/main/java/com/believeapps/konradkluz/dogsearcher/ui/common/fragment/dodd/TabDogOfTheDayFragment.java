@@ -65,14 +65,20 @@ public class TabDogOfTheDayFragment extends Fragment implements TabDogOfTheDayVi
     @BindView(R.id.add_to_favourites_button)
     ImageButton mAddToFavourites;
 
+    @Inject
+    public TabDogOfTheDayFragment() {
+    }
+
     @Override
     public void onAttach(Context context) {
         AndroidSupportInjection.inject(this);
         super.onAttach(context);
     }
 
-    @Inject
-    public TabDogOfTheDayFragment() {
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(false);
     }
 
     @Override

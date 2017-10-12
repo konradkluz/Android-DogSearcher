@@ -36,6 +36,7 @@ public class AllDogsFragmentViewModel extends ViewModel {
     private DogRemoteRepository mDogRemoteRepository;
     private DogLocalRepository mDogLocalRepository;
     private boolean requestSent = false;
+    private String searchQuery = "";
 
     @Inject
     public AllDogsFragmentViewModel(DogRemoteRepository remoteRepository,
@@ -92,6 +93,14 @@ public class AllDogsFragmentViewModel extends ViewModel {
         if (compositeDisposable != null && !compositeDisposable.isDisposed()) {
             compositeDisposable.clear();
         }
+    }
+
+    public String getSearchQuery() {
+        return searchQuery;
+    }
+
+    public void setSearchQuery(String searchQuery) {
+        this.searchQuery = searchQuery;
     }
 
     public boolean isRequestSent() {

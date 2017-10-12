@@ -30,7 +30,6 @@ public class AllDogsRecyclerItemClickListener extends RecyclerView.SimpleOnItemT
         mGestureDetector = new GestureDetectorCompat(context, new GestureDetector.SimpleOnGestureListener(){
             @Override
             public boolean onSingleTapUp(MotionEvent e) {
-                Log.d(TAG, "onSingleTapUp: started");
                 View childView = getChildView(recyclerView, e);
                 if (childView != null && mOnRecyclerClickListener != null) {
                     Log.d(TAG, "onSingleTapUp: calling listener.onItemClick");

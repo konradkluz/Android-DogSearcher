@@ -6,6 +6,8 @@ import com.believeapps.konradkluz.dogsearcher.ui.main.fragment.all.adapter.AllDo
 import com.believeapps.konradkluz.dogsearcher.ui.main.MainActivity;
 import com.believeapps.konradkluz.dogsearcher.ui.main.fragment.all.adapter.DogViewHolder;
 
+import javax.inject.Singleton;
+
 import dagger.Module;
 import dagger.Provides;
 

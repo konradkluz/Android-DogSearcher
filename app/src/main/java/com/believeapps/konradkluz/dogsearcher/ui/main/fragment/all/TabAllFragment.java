@@ -36,6 +36,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -50,7 +51,6 @@ import static android.content.Context.SEARCH_SERVICE;
 /**
  * Created by konradkluz on 28/09/2017.
  */
-
 public class TabAllFragment extends Fragment implements TabAllView,
         DogViewHolder.AllDogsItemClickListener {
 
@@ -89,6 +89,7 @@ public class TabAllFragment extends Fragment implements TabAllView,
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        menu.clear();
         inflater.inflate(R.menu.menu_search, menu);
         SearchManager searchManager = (SearchManager) getActivity().getSystemService(SEARCH_SERVICE);
         mSearchView = (SearchView) menu.findItem(R.id.app_bar_search).getActionView();
@@ -96,10 +97,15 @@ public class TabAllFragment extends Fragment implements TabAllView,
         mSearchView.setSearchableInfo(searchableInfo);
         mSearchView.setIconified(true);
 
+        if (mAllDogsFragmentViewModel.getSearchQuery() != null && !mAllDogsFragmentViewModel.getSearchQuery().isEmpty()) {
+            mSearchView.setQuery(mAllDogsFragmentViewModel.getSearchQuery(), false);
+            mSearchView.setIconified(false);
+        }
 
         RxSearch.fromSearchView(mSearchView)
                 .debounce(300, TimeUnit.MILLISECONDS)
                 .switchMap(query -> {
+                    mAllDogsFragmentViewModel.setSearchQuery(query);
                     return Flowable.fromCallable(() -> mBreedWithSubBreeds)
                             .flatMap(breeds -> {
                                 List<BreedWithSubBreeds> filtered = filter(query, breeds);
@@ -137,12 +143,28 @@ public class TabAllFragment extends Fragment implements TabAllView,
     }
 
     @Override
+    public void onSaveInstanceState(Bundle bundle) {
+        super.onSaveInstanceState(bundle);
+        bundle.putString("gowno", mAllDogsFragmentViewModel.getSearchQuery());
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_tab_all, container, false);
         ButterKnife.bind(this, rootView);
 
         mAllDogsFragmentViewModel = ViewModelProviders.of(this, mFactory).get(AllDogsFragmentViewModel.class);
+        if (savedInstanceState != null) {
+            String query = savedInstanceState.getString("gowno");
+            if (query != null) {
+                Log.d(TAG, "onCreateView: ---------");
+                mAllDogsFragmentViewModel.setSearchQuery(query);
+            }
+        }
+
+
+        Log.d(TAG, "onCreateView: --------------");
 
         mAllDogs.setLayoutManager(new LinearLayoutManager(getActivity()));
 
@@ -156,6 +178,7 @@ public class TabAllFragment extends Fragment implements TabAllView,
     @Override
     public void onStart() {
         super.onStart();
+
         mAllDogsFragmentViewModel.getApiResponse().observe(this, response -> {
             if (response.status == Status.ERROR) {
                 mAllDogsRecyclerViewAdapter.swapSource(new ArrayList<>());
@@ -168,7 +191,7 @@ public class TabAllFragment extends Fragment implements TabAllView,
                         updatedBreeds -> {
                             Log.d(TAG, "onCreateView: updated breeds: " + updatedBreeds);
                             mBreedWithSubBreeds = updatedBreeds;
-                            String query = mSearchView.getQuery().toString();
+                            String query = mAllDogsFragmentViewModel.getSearchQuery();
                             if (query != null && !query.isEmpty()) {
                                 mAllDogsRecyclerViewAdapter.swapSource(filter(query, mBreedWithSubBreeds));
                             } else {

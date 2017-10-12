@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
 import io.reactivex.Completable;
 import io.reactivex.Maybe;
@@ -28,7 +29,7 @@ import io.reactivex.Single;
 /**
  * Created by konradkluz on 28/09/2017.
  */
-
+@Singleton
 public class AllDogsRecyclerViewAdapter extends RecyclerView.Adapter<DogViewHolder> {
 
     private static final String TAG = "AllDogsRecyclerViewAdap";
@@ -122,6 +123,7 @@ public class AllDogsRecyclerViewAdapter extends RecyclerView.Adapter<DogViewHold
 
     public void swapSource(List<BreedWithSubBreeds> dogs) {
         mDogs = dogs;
+        Log.d(TAG, "swapSource: swapped");
         notifyDataSetChanged();
     }
 

@@ -34,7 +34,7 @@ import dagger.android.support.AndroidSupportInjection;
  * Created by konradkluz on 28/09/2017.
  */
 
-public class TabFavouritesFragment extends Fragment implements TabFavouritesView, DogFavouritesViewHolder.FavouritesItemClickListener {
+public class TabFavouritesFragment extends Fragment implements DogFavouritesViewHolder.FavouritesItemClickListener {
 
     private static final String TAG = "TabFavouritesFragment";
 
@@ -48,10 +48,6 @@ public class TabFavouritesFragment extends Fragment implements TabFavouritesView
 
     @BindView(R.id.favourites_dogs_list)
     RecyclerView mRecyclerView;
-
-    @Inject
-    public TabFavouritesFragment() {
-    }
 
     @Override
     public void onAttach(Context context) {
@@ -68,9 +64,9 @@ public class TabFavouritesFragment extends Fragment implements TabFavouritesView
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
         View rootView = inflater.inflate(R.layout.fragment_tab_favourites, container, false);
         ButterKnife.bind(this, rootView);
-
         mFavouritesViewModel = ViewModelProviders.of(this, mFactory).get(FavouritesViewModel.class);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         mRecyclerView.setAdapter(mFavouritesRecyclerViewAdapter);

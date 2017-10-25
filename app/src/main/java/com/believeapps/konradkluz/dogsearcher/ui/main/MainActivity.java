@@ -40,15 +40,6 @@ public class MainActivity extends AppCompatActivity implements MainView, HasSupp
     @Inject
     DispatchingAndroidInjector<Fragment> mFragmentDispatchingAndroidInjector;
 
-    @Inject
-    TabAllFragment mTabAllFragment;
-
-    @Inject
-    TabFavouritesFragment mTabFavouritesFragment;
-
-    @Inject
-    TabDogOfTheDayFragment mTabDogOfTheDayFragment;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         AndroidInjection.inject(this);
@@ -58,15 +49,9 @@ public class MainActivity extends AppCompatActivity implements MainView, HasSupp
         setSupportActionBar(toolbar);
         ButterKnife.bind(this);
         if (findViewById(R.id.landscape_tab_view) != null) {
-            mLayoutInflationStrategy = new LargeLandscapeLayoutInflationStrategy(this,
-                    mTabAllFragment,
-                    mTabFavouritesFragment,
-                    mTabDogOfTheDayFragment);
+            mLayoutInflationStrategy = new LargeLandscapeLayoutInflationStrategy(this);
         } else {
-            mLayoutInflationStrategy = new PortraitLayoutInflationStrategy(this,
-                    mTabAllFragment,
-                    mTabFavouritesFragment,
-                    mTabDogOfTheDayFragment);
+            mLayoutInflationStrategy = new PortraitLayoutInflationStrategy(this);
         }
         mLayoutInflationStrategy.inflate();
     }

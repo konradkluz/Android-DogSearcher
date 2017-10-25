@@ -36,13 +36,11 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
-import javax.inject.Singleton;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import dagger.android.support.AndroidSupportInjection;
 import io.reactivex.Flowable;
-import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 
@@ -51,7 +49,7 @@ import static android.content.Context.SEARCH_SERVICE;
 /**
  * Created by konradkluz on 28/09/2017.
  */
-public class TabAllFragment extends Fragment implements TabAllView,
+public class TabAllFragment extends Fragment implements
         DogViewHolder.AllDogsItemClickListener {
 
     private static final String TAG = "TabAllFragment";
@@ -71,9 +69,6 @@ public class TabAllFragment extends Fragment implements TabAllView,
 
     private SearchView mSearchView;
 
-    @Inject
-    public TabAllFragment() {
-    }
 
     @Override
     public void onAttach(Context context) {
@@ -153,7 +148,6 @@ public class TabAllFragment extends Fragment implements TabAllView,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_tab_all, container, false);
         ButterKnife.bind(this, rootView);
-
         mAllDogsFragmentViewModel = ViewModelProviders.of(this, mFactory).get(AllDogsFragmentViewModel.class);
         if (savedInstanceState != null) {
             String query = savedInstanceState.getString("gowno");

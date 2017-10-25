@@ -18,11 +18,6 @@ import dagger.Provides;
 public class TabAllFragmentModule {
 
     @Provides
-    TabAllView provideTabAllView(TabAllFragment tabAllFragment) {
-        return tabAllFragment;
-    }
-
-    @Provides
     RecyclerView.Adapter<DogViewHolder> providesAdapter(AllDogsRecyclerViewAdapter viewAdapter) {
         return viewAdapter;
     }

@@ -8,8 +8,6 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
@@ -23,13 +21,8 @@ import com.believeapps.konradkluz.dogsearcher.model.entities.BreedWithSubBreeds;
 import com.believeapps.konradkluz.dogsearcher.model.entities.DogOfTheDay;
 import com.believeapps.konradkluz.dogsearcher.model.entities.Status;
 import com.believeapps.konradkluz.dogsearcher.ui.main.MainView;
-import com.believeapps.konradkluz.dogsearcher.viewmodel.AllDogsFragmentViewModel;
 import com.believeapps.konradkluz.dogsearcher.viewmodel.DogOfTheDayFragmentModel;
 import com.squareup.picasso.Picasso;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 import javax.inject.Inject;
 
@@ -43,7 +36,7 @@ import static java.util.Collections.emptyList;
  * Created by konradkluz on 28/09/2017.
  */
 
-public class TabDogOfTheDayFragment extends Fragment implements TabDogOfTheDayView, View.OnClickListener   {
+public class TabDogOfTheDayFragment extends Fragment implements View.OnClickListener   {
 
     private static final String TAG = "TabDogOfTheDayFragment";
 
@@ -64,10 +57,6 @@ public class TabDogOfTheDayFragment extends Fragment implements TabDogOfTheDayVi
 
     @BindView(R.id.add_to_favourites_button)
     ImageButton mAddToFavourites;
-
-    @Inject
-    public TabDogOfTheDayFragment() {
-    }
 
     @Override
     public void onAttach(Context context) {

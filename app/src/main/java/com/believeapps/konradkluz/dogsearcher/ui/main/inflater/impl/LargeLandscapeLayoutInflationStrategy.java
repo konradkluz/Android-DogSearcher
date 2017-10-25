@@ -42,10 +42,10 @@ public class LargeLandscapeLayoutInflationStrategy implements LayoutInflationStr
     @BindView(R.id.landscape_main_content)
     CoordinatorLayout coordinatorLayout;
 
-    public LargeLandscapeLayoutInflationStrategy(MainActivity activity, TabAllFragment tabAllFragment, TabFavouritesFragment tabFavouritesFragment, TabDogOfTheDayFragment tabDogOfTheDayFragment) {
-        mTabAllFragment = tabAllFragment;
-        mTabFavouritesFragment = tabFavouritesFragment;
-        mTabDogOfTheDayFragment = tabDogOfTheDayFragment;
+    public LargeLandscapeLayoutInflationStrategy(MainActivity activity) {
+        mTabAllFragment = new TabAllFragment();
+        mTabFavouritesFragment = new TabFavouritesFragment();
+        mTabDogOfTheDayFragment = new TabDogOfTheDayFragment();
         mActivity = activity;
         ButterKnife.bind(this, mActivity);
     }

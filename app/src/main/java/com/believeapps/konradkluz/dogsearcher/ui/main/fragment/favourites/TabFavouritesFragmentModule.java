@@ -18,11 +18,6 @@ import dagger.Provides;
 public class TabFavouritesFragmentModule {
 
     @Provides
-    TabFavouritesView provideTabFavouritesView(TabFavouritesFragment tabFavouritesFragment) {
-        return tabFavouritesFragment;
-    }
-
-    @Provides
     RecyclerView.Adapter<DogFavouritesViewHolder> providesAdapter(FavouritesRecyclerViewAdapter adapter) {
         return adapter;
     }

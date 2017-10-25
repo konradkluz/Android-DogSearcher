@@ -14,11 +14,6 @@ import dagger.Provides;
 public class DogDetailActivityModule {
 
     @Provides
-    DogDetailView provideDogDetailView(DogDetailActivity dogDetailActivity) {
-        return dogDetailActivity;
-    }
-
-    @Provides
     ViewModel provideDogDetailViewModel(DogDetailActivityModel dogDetailActivityModel) {
         return dogDetailActivityModel;
     }

@@ -42,10 +42,10 @@ public class PortraitLayoutInflationStrategy implements LayoutInflationStrategy{
     private TabDogOfTheDayFragment mTabDogOfTheDayFragment;
     private MainActivity mActivity;
 
-    public PortraitLayoutInflationStrategy(MainActivity activity, TabAllFragment tabAllFragment, TabFavouritesFragment tabFavouritesFragment, TabDogOfTheDayFragment tabDogOfTheDayFragment) {
-        mTabAllFragment = tabAllFragment;
-        mTabFavouritesFragment = tabFavouritesFragment;
-        mTabDogOfTheDayFragment = tabDogOfTheDayFragment;
+    public PortraitLayoutInflationStrategy(MainActivity activity) {
+        mTabAllFragment = new TabAllFragment();
+        mTabFavouritesFragment = new TabFavouritesFragment();
+        mTabDogOfTheDayFragment = new TabDogOfTheDayFragment();
         mActivity = activity;
         ButterKnife.bind(this, mActivity);
     }

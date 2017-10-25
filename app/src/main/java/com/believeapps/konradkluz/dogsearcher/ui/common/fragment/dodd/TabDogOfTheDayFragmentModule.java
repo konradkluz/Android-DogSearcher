@@ -9,8 +9,4 @@ import dagger.Provides;
 @Module
 public class TabDogOfTheDayFragmentModule {
 
-    @Provides
-    TabDogOfTheDayView provideTabDogOfTheDayView(TabDogOfTheDayFragment tabDogOfTheDayFragment) {
-        return tabDogOfTheDayFragment;
-    }
 }

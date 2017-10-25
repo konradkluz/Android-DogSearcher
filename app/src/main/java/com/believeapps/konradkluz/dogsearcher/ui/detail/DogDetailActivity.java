@@ -2,9 +2,6 @@ package com.believeapps.konradkluz.dogsearcher.ui.detail;
 
 import android.arch.lifecycle.ViewModelProvider;
 import android.arch.lifecycle.ViewModelProviders;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -18,23 +15,16 @@ import android.widget.Toast;
 import com.believeapps.konradkluz.dogsearcher.R;
 import com.believeapps.konradkluz.dogsearcher.model.entities.Breed;
 import com.believeapps.konradkluz.dogsearcher.model.entities.BreedWithSubBreeds;
-import com.believeapps.konradkluz.dogsearcher.ui.common.fragment.dodd.TabDogOfTheDayFragment;
-import com.believeapps.konradkluz.dogsearcher.viewmodel.AllDogsFragmentViewModel;
 import com.believeapps.konradkluz.dogsearcher.viewmodel.DogDetailActivityModel;
 import com.squareup.picasso.Picasso;
-
-import java.io.Serializable;
 
 import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import dagger.android.AndroidInjection;
-import dagger.android.AndroidInjector;
-import dagger.android.DispatchingAndroidInjector;
-import dagger.android.support.HasSupportFragmentInjector;
 
-public class DogDetailActivity extends AppCompatActivity implements DogDetailView, View.OnClickListener  {
+public class DogDetailActivity extends AppCompatActivity implements View.OnClickListener  {
 
     private static final String TAG = "DogDetailActivity";
 

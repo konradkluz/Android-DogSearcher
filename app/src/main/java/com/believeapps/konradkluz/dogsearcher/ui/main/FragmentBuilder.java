@@ -36,14 +36,4 @@ public abstract class FragmentBuilder {
     @FragmentKey(TabFavouritesFragment.class)
     abstract AndroidInjector.Factory<? extends Fragment> bindTabFavouritesFragment(TabFavouritesFragmentComponent.Builder builder);
 
-//    @ContributesAndroidInjector(modules = TabAllFragmentModule.class)
-//    abstract TabAllFragment bindTabAllFragment();
-//
-//    @ContributesAndroidInjector(modules = TabDogOfTheDayFragmentModule.class)
-//    abstract TabDogOfTheDayFragment bindTabDogOfTheDayFragment();
-//
-//    @ContributesAndroidInjector(modules = TabFavouritesFragmentModule.class)
-//    abstract TabFavouritesFragment bindTabFavouritesFragment();
-
-
 }
